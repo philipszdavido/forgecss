@@ -1,12 +1,8 @@
 //
-//  lexer.cpp
+//  Rule.cpp
 //  forgecss
 //
 //  Created by Chidume Nnamdi on 13/04/2026.
 //
 
-#include "lexer.hpp"
-
-void Lexer::parse() {
-    
-}
+#include "Rule.hpp"

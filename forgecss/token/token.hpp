@@ -10,4 +10,8 @@
 
 #include <stdio.h>
 
+class Token {
+    
+};
+
 #endif /* token_hpp */

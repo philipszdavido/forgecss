@@ -9,9 +9,16 @@
 #define lexer_hpp
 
 #include <stdio.h>
+#include <string>
+
+using namespace std;
 
 class Lexer {
+public:
+    string cssString;
+    Lexer(string cssString) : cssString(cssString) {};
     
+    void parse();
 };
 
 #endif /* lexer_hpp */
