@@ -24,6 +24,9 @@ enum TokenType {
     R_SBRACE, // [
     SEMI_COLON, // ;
     IDENTIFIER,
+    DOUBLE_COLON, // ::
+    HYPEN, // -
+    DOUBLE_HYPEN, // --
     DECLARATION_END,
 };
 

@@ -7,6 +7,12 @@
 
 #include "lexer.hpp"
 
+#include <unordered_set>
+
+const std::unordered_set<char> IDENTIFIER_SYMBOLS = {
+    '_', '-', '$', '.', '(', ')'
+};
+
 void Lexer::parse() {
     
     while (index < cssString.length()) {
@@ -15,6 +21,11 @@ void Lexer::parse() {
         switch (_currentChar) {
                 
             case ':':
+                
+                if (matchNext(':')) {
+                    addToken(TokenType::DOUBLE_COLON, "::");
+                    break;
+                }
                 addToken(TokenType::COLON, to_string(_currentChar));
                 break;
                 
@@ -38,12 +49,47 @@ void Lexer::parse() {
                 addToken(TokenType::RBRACE, to_string(_currentChar));
                 break;
                 
+            case '[':
+                addToken(TokenType::L_SBRACE, to_string(_currentChar));
+                break;
+            
+            case ']':
+                addToken(TokenType::R_SBRACE, to_string(_currentChar));
+                break;
+                
+            case '(':
+                addToken(TokenType::LPAREN, to_string(_currentChar));
+                break;
+            
+            case ')':
+                addToken(TokenType::RPAREN, to_string(_currentChar));
+                break;
+
             case '-':
+                
+                if (matchNext('-')) {
+                    
+                    advance();
+                    
+                    if (isAlphaNumeric(currentChar())) {
+                        collectIdentifier("--");
+                        break;
+                    }
+                    
+                    addToken(TokenType::DOUBLE_HYPEN, "--");
+                    break;
+                }
+
                 addToken(TokenType::HYPEN, to_string(_currentChar));
                 break;
                 
+            case '#':
+                // pick till you hit ; or space or newline
+                collectIdentifier();
+                break;
+                
             default:
-                if (isAlpha()) {
+                if (isAlphaNumeric()) {
                     collectIdentifier();
                 }
                 break;
@@ -52,17 +98,46 @@ void Lexer::parse() {
     }
 }
 
+bool Lexer::matchNext(const char value) {
+    
+    if (isEOF()) {
+        return false;
+    }
+    
+    auto next = cssString[index + 1];
+    if (next && next == value) {
+        advance();
+        return true;
+    }
+    
+    return false;
+}
+
 void Lexer::collectIdentifier() {
     
     string ident = "";
     ident += (currentChar());
-    
-    while (!isEOF() && isAlpha()) {
+    advance();
+
+    while (!isEOF() && (isAlphaNumeric() || IDENTIFIER_SYMBOLS.contains(currentChar()))) {
+        ident += currentChar();
         advance();
-        if(isAlpha()) {
-            ident += currentChar();
-        }
     }
+    
+    addToken(TokenType::IDENTIFIER, ident);
+    index--;
+
+}
+
+void Lexer::collectIdentifier(const string str) {
+    
+    string ident = str;
+
+    while (!isEOF() && (isAlphaNumeric() || IDENTIFIER_SYMBOLS.contains(currentChar()))) {
+        ident += currentChar();
+        advance();
+    }
+    
     addToken(TokenType::IDENTIFIER, ident);
     index--;
 
@@ -73,6 +148,17 @@ void Lexer::addToken(const TokenType type, const string value) {
 }
 
 char Lexer::currentChar() { return cssString[index]; }
+
+bool Lexer::isAlphaNumeric() {
+    
+    char _char = currentChar();
+        
+    return (_char >= 'a' && _char <= 'z') || (_char >= 'A' && _char <= 'Z') || (_char >= '0' && _char <= '9');
+}
+
+bool Lexer::isAlphaNumeric(const char _char) {
+    return (_char >= 'a' && _char <= 'z') || (_char >= 'A' && _char <= 'Z') || (_char >= '0' && _char <= '9');
+}
 
 bool Lexer::isAlpha() {
     

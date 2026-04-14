@@ -31,9 +31,13 @@ public:
     void parse();
     void addToken(const TokenType type, const string value);
     bool isAlpha();
+    bool isAlphaNumeric();
+    bool isAlphaNumeric(const char _char);
     void collectIdentifier();
+    void collectIdentifier(const string str);
     char currentChar();
     void advance();
+    bool matchNext(const char value);
     string to_string(const char v);
     bool isEOF();
     
