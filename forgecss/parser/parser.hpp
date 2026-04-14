@@ -9,5 +9,15 @@
 #define parser_hpp
 
 #include <stdio.h>
+#include <vector>
+#include "./../token/token.hpp"
+
+class Parser {
+    
+  public:
+    const std::vector<Token> tokens;
+    Parser(const std::vector<Token> tokens) : tokens(tokens) {};
+    
+};
 
 #endif /* parser_hpp */

@@ -9,5 +9,16 @@
 #define StyleSheet_hpp
 
 #include <stdio.h>
+#include <vector>
+
+#include "../Rule/Rule.hpp"
+
+class Stylesheet {
+
+public:
+    
+    std::vector<Rule> rules;
+    
+};
 
 #endif /* StyleSheet_hpp */

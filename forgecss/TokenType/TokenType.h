@@ -12,9 +12,18 @@ enum TokenType {
     SELECTOR_START,
     DECLARATION_START,
     PROPERTY,
-    COLON,
+    COLON, // :
     VALUE,
-    COMMA,
+    COMMA, // ,
+    DOT, // .
+    LPAREN, // (
+    RPAREN, // )
+    LBRACE, // {
+    RBRACE, // }
+    L_SBRACE, // ]
+    R_SBRACE, // [
+    SEMI_COLON, // ;
+    IDENTIFIER,
     DECLARATION_END,
 };
 
