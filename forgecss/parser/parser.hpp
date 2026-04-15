@@ -1,23 +1,25 @@
+////
+////  parser.hpp
+////  forgecss
+////
+////  Created by Chidume Nnamdi on 13/04/2026.
+////
 //
-//  parser.hpp
-//  forgecss
+//#ifndef parser_hpp
+//#define parser_hpp
 //
-//  Created by Chidume Nnamdi on 13/04/2026.
+//#include <stdio.h>
+//#include <vector>
+//#include "./../token/token.hpp"
 //
-
-#ifndef parser_hpp
-#define parser_hpp
-
-#include <stdio.h>
-#include <vector>
-#include "./../token/token.hpp"
-
-class Parser {
-    
-  public:
-    const std::vector<Token> tokens;
-    Parser(const std::vector<Token> tokens) : tokens(tokens) {};
-    
-};
-
-#endif /* parser_hpp */
+//class Parser {
+//    
+//  public:
+//    const std::vector<Token> tokens;
+//    Parser(const std::vector<Token> tokens) : tokens(tokens) {};
+//    
+//    void parse();
+//    
+//};
+//
+//#endif /* parser_hpp */

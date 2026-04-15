@@ -8,26 +8,29 @@
 #ifndef TokenType_h
 #define TokenType_h
 
-enum TokenType {
-    SELECTOR_START,
-    DECLARATION_START,
-    PROPERTY,
-    COLON, // :
-    VALUE,
-    COMMA, // ,
-    DOT, // .
-    LPAREN, // (
-    RPAREN, // )
-    LBRACE, // {
-    RBRACE, // }
-    L_SBRACE, // ]
-    R_SBRACE, // [
-    SEMI_COLON, // ;
-    IDENTIFIER,
-    DOUBLE_COLON, // ::
-    HYPEN, // -
-    DOUBLE_HYPEN, // --
-    DECLARATION_END,
+enum class TokenType {
+    
+    LBRACE, RBRACE,
+    LPAREN, RPAREN,
+    LBRACKET, RBRACKET,
+    COLON, SEMICOLON,
+    COMMA,
+
+    DOT, HASH, IDENT,
+    DOUBLE_COLON,
+
+    NUMBER,
+    DIMENSION,
+    PERCENTAGE,
+    STRING,
+    FUNCTION,
+    URL,
+
+    AT_KEYWORD,
+
+    WHITESPACE,
+    DELIM,
+    END_OF_FILE
 };
 
 #endif /* TokenType_h */
