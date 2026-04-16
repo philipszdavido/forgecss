@@ -1,12 +1,12 @@
-////
-////  parser.cpp
-////  forgecss
-////
-////  Created by Chidume Nnamdi on 13/04/2026.
-////
 //
-//#include "parser.hpp"
+//  parser.cpp
+//  forgecss
 //
-//void Parser::parse() {
-//    
-//}
+//  Created by Chidume Nnamdi on 13/04/2026.
+//
+
+#include "parser.hpp"
+
+void Parser::parse() {
+    
+}
