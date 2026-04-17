@@ -8,6 +8,14 @@
 #ifndef TokenType_h
 #define TokenType_h
 
+#pragma once
+
+#include <stdio.h>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
 enum class TokenType {
     
     LBRACE, RBRACE,
@@ -26,6 +34,9 @@ enum class TokenType {
     FUNCTION,
     URL,
     VARIABLE,
+    FUNCTION_ARG,
+    VALUE_END,
+    VALUE_START,
 
     AT_KEYWORD,
     
@@ -33,10 +44,14 @@ enum class TokenType {
     DECLARATION_NAME_END,
     DECLARATION_VALUE_START,
     DECLARATION_VALUE_END,
+    SELECTOR_START,
+    SELECTOR_END,
 
     WHITESPACE,
     DELIM,
     END_OF_FILE
 };
+
+void printTokenType(TokenType type);
 
 #endif /* TokenType_h */

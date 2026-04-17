@@ -8,9 +8,9 @@
 #ifndef lexer_hpp
 #define lexer_hpp
 
-#include <stdio.h>
-
 #pragma once
+
+#include <stdio.h>
 #include <string>
 #include <vector>
 #include <cctype>
@@ -31,7 +31,6 @@ public:
     Lexer(string input);
     void tokenize();
     vector<Token> tokens;
-    void printTokenType(TokenType type);
 
 private:
     string input;
@@ -62,6 +61,11 @@ private:
     void tokenizeSelector();
     void tokenizeDeclarationName();
     void tokenizeDeclarationValue();
+    
+    void consumeFunctionCallArgs();
+    void changeMode(LexerMode modeToSet);
+    void skipWhiteSpaces();
+    void removeStandaloneSelector(vector<Token>& tokens);
     
 };
 

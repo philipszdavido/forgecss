@@ -1,5 +1,5 @@
 #  CSS Parser
-
+```css
 body {
   color: red;
   margin: 10px;
@@ -8,7 +8,9 @@ body {
 h1, h2 {
   font-size: 20px;
 }
+```
 
+```json
 {
   type: "Stylesheet",
   rules: [
@@ -29,7 +31,7 @@ h1, h2 {
     }
   ]
 }
-
+```
 
 .baseline-status[data-astro-cid-7wt35nye]::part(root)
 

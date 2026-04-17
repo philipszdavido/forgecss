@@ -11,7 +11,9 @@ unordered_map<string, string> keywords = {
     {"solid", "solid"}
 };
 
-Lexer::Lexer(string input) : input(input) {}
+Lexer::Lexer(string input) : input(input) {
+    add(TokenType::SELECTOR_START, "");
+}
 
 void Lexer::tokenize() {
     while (!eof()) {
@@ -43,18 +45,57 @@ void Lexer::tokenize() {
     }
 
     add(TokenType::END_OF_FILE, "");
+    
+    // run phases
+    skipWhiteSpaces();
+    
+}
+
+void Lexer::skipWhiteSpaces() {
+    for (int i = int(tokens.size() - 1); i >= 0; i--) {
+        if (tokens[i].type == TokenType::WHITESPACE) {
+            tokens.erase(tokens.begin() + i);
+        }
+    }
+}
+
+void Lexer::removeStandaloneSelector(vector<Token> &tokens) {
+    
+    int seen = 0;
+    int index;
+    
+    for (int i = 0; i <= (tokens.size() - 1); i++) {
+        
+        Token newToken = tokens[i];
+        
+        if (newToken.type == TokenType::SELECTOR_START) {
+            seen++;
+            index = i;
+        }
+        
+        if (newToken.type == TokenType::SELECTOR_END) {
+            seen--;
+        }
+                
+    }
+    
+    if (seen > 0) {
+        // remove SELECTOR_START
+//        tokens.erase(tokens.begin() + index);
+    }
+    
 }
 
 void Lexer::tokenizeSelector() {
     char c = current();
     
     if (c == '{') {
+        changeMode(LexerMode::DECLARATION_NAME);
         add(TokenType::LBRACE, "{");
-        mode = LexerMode::DECLARATION_NAME;
         advance();
         return;
     }
-
+        
     if (c == '.') {
         advance();
         add(TokenType::DOT, consumeIdent());
@@ -85,7 +126,8 @@ void Lexer::tokenizeSelector() {
             advance();
 
             while (!eof() && current() != ')') {
-                tokenizeDeclarationValue();
+                // tokenizeDeclarationValue();
+                consumeFunctionCallArgs();
             }
 
             if (current() == ')') {
@@ -107,14 +149,14 @@ void Lexer::tokenizeDeclarationName() {
 
     if (current() == '}') {
         add(TokenType::RBRACE, "}");
-        mode = LexerMode::SELECTOR;
+        changeMode(LexerMode::SELECTOR);
         advance();
         return;
     }
 
     if (current() == ':') {
         add(TokenType::COLON, ":");
-        mode = LexerMode::DECLARATION_VALUE;
+        changeMode(LexerMode::DECLARATION_VALUE);
         advance();
         return;
     }
@@ -135,14 +177,14 @@ void Lexer::tokenizeDeclarationValue() {
 
     if (c == ';') {
         add(TokenType::SEMICOLON, ";");
-        mode = LexerMode::DECLARATION_NAME;
+        changeMode(LexerMode::DECLARATION_NAME);
         advance();
         return;
     }
 
     if (c == '}') {
         add(TokenType::RBRACE, "}");
-        mode = LexerMode::SELECTOR;
+        changeMode(LexerMode::SELECTOR);
         advance();
         return;
     }
@@ -224,6 +266,17 @@ void Lexer::tokenizeDeclarationValue() {
     advance();
 }
 
+void Lexer::changeMode(LexerMode modeToSet) {
+    
+    if (mode != LexerMode::SELECTOR && modeToSet == LexerMode::SELECTOR) {
+        add(TokenType::SELECTOR_START, "");
+    } else if (mode == LexerMode::SELECTOR && modeToSet != LexerMode::SELECTOR) {
+        add(TokenType::SELECTOR_END, "");
+    }
+    
+    mode = modeToSet;
+}
+
 void Lexer::consumeNumber() {
     string num = "";
 
@@ -282,7 +335,8 @@ void Lexer::consumeIdentLike() {
         advance();
 
         while (!eof() && current() != ')') {
-            tokenizeDeclarationValue();
+            // tokenizeDeclarationValue();
+            consumeFunctionCallArgs();
         }
 
         if (current() == ')') {
@@ -389,6 +443,86 @@ void Lexer::consumeWhitespace() {
     add(TokenType::WHITESPACE, ws);
 }
 
+void Lexer::consumeFunctionCallArgs() {
+    char c = current();
+
+    add(TokenType::VALUE_START, "");
+
+    if (c == '"' || c == '\'') {
+        add(TokenType::STRING, consumeString());
+
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+
+    if (isDigit(c) || (c == '.' && isDigit(next()))) {
+        consumeNumber();
+        
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+
+    if (isAlpha(c)) {
+        consumeIdentLike();
+        
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+
+    if (c == '#') {
+        advance();
+        add(TokenType::HASH, consumeIdent());
+        
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+
+    if (c == ',') {
+        add(TokenType::COMMA, ",");
+        advance();
+        
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+
+    if (c == '(') {
+        add(TokenType::LPAREN, "(");
+        advance();
+        
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+
+    if (c == ')') {
+        add(TokenType::RPAREN, ")");
+        advance();
+        
+        add(TokenType::VALUE_END, "");
+
+        return;
+    }
+    
+    if (c == '-') {
+        if (next() == '-') {
+            advance(); advance();
+            string value = consumeVariable();
+            add(TokenType::VARIABLE, value);
+            
+            add(TokenType::VALUE_END, "");
+
+            return;
+        }
+    }
+
+    advance();
+}
+
 char Lexer::current() {
     return eof() ? '\0' : input[index];
 }
@@ -419,48 +553,4 @@ bool Lexer::isAlphaNumeric(char c) {
 
 void Lexer::add(TokenType type, string value) {
     tokens.emplace_back(type, value);
-}
-
-void Lexer::printTokenType(TokenType type) {
-    switch (type) {
-        case TokenType::LBRACE: std::cout << "LBRACE"; break;
-        case TokenType::RBRACE: std::cout << "RBRACE"; break;
-        case TokenType::LPAREN: std::cout << "LPAREN"; break;
-        case TokenType::RPAREN: std::cout << "RPAREN"; break;
-        case TokenType::LBRACKET: std::cout << "LBRACKET"; break;
-        case TokenType::RBRACKET: std::cout << "RBRACKET"; break;
-
-        case TokenType::COLON: std::cout << "COLON"; break;
-        case TokenType::SEMICOLON: std::cout << "SEMICOLON"; break;
-        case TokenType::COMMA: std::cout << "COMMA"; break;
-
-        case TokenType::DOT: std::cout << "DOT"; break;
-        case TokenType::HASH: std::cout << "HASH"; break;
-        case TokenType::IDENT: std::cout << "IDENT"; break;
-        case TokenType::DOUBLE_COLON: std::cout << "DOUBLE_COLON"; break;
-
-        case TokenType::NUMBER: std::cout << "NUMBER"; break;
-        case TokenType::DIMENSION: std::cout << "DIMENSION"; break;
-        case TokenType::PERCENTAGE: std::cout << "PERCENTAGE"; break;
-        case TokenType::STRING: std::cout << "STRING"; break;
-        case TokenType::FUNCTION: std::cout << "FUNCTION"; break;
-        case TokenType::URL: std::cout << "URL"; break;
-        case TokenType::VARIABLE: std::cout << "VARIABLE"; break;
-
-        case TokenType::AT_KEYWORD: std::cout << "AT_KEYWORD"; break;
-            
-        case TokenType::DECLARATION_NAME_START: std::cout << "DECLARATION_NAME_START"; break;
-        case TokenType::DECLARATION_NAME_END: std::cout << "DECLARATION_NAME_END"; break;
-        case TokenType::DECLARATION_VALUE_START: std::cout << "DECLARATION_VALUE_START"; break;
-        case TokenType::DECLARATION_VALUE_END: std::cout << "DECLARATION_VALUE_END"; break;
-
-        case TokenType::WHITESPACE: std::cout << "WHITESPACE"; break;
-        case TokenType::DELIM: std::cout << "DELIM"; break;
-
-        case TokenType::END_OF_FILE: std::cout << "EOF"; break;
-
-        default:
-            std::cout << "UNKNOWN";
-            break;
-    }
 }
