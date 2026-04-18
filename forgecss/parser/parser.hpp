@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <vector>
 #include "./../token/token.hpp"
+#include "../types/Rule/Rule.hpp"
 
 enum class ParserMode {
     SELECTOR,
@@ -25,11 +26,6 @@ private:
     Token currentToken();
     ParserMode mode = ParserMode::SELECTOR;
     
-  public:
-    const std::vector<Token> tokens;
-    Parser(const std::vector<Token> tokens) : tokens(tokens) {};
-    
-    void parse();
     void advance();
     size_t size();
     
@@ -42,6 +38,16 @@ private:
 //    popState();
     void consumeSelector();
     void consumeToken(TokenType type);
+    std::string vectorToString(vector<Token> _tokens);
+    Declaration consumeDeclItem();
+    vector<Declaration> consumeDeclList();
+
+  public:
+    std::vector<Rule> rules;
+    const std::vector<Token> tokens;
+    Parser(const std::vector<Token> tokens) : tokens(tokens) {};
+    
+    void parse();
 };
 
 #endif /* parser_hpp */

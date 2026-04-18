@@ -15,7 +15,7 @@ void Parser::parse() {
         
         // if selector_start
         // consume till }
-        if (token.type == TokenType::SELECTOR_START) {
+        if (token.type == TokenType::SELECTOR_START && tokens[index + 1].type != TokenType::END_OF_FILE) {
             consumeSelector();
         }
 
@@ -27,6 +27,7 @@ void Parser::parse() {
 void Parser::consumeSelector() {
     
     vector<Token> selector;
+    vector<Declaration> declarations;
     
     consumeToken(TokenType::SELECTOR_START);
     
@@ -40,7 +41,65 @@ void Parser::consumeSelector() {
     consumeToken(TokenType::LBRACE);
     
     // pick declarations till }
+    declarations = consumeDeclList();
+    string selectorName = vectorToString(selector);
     
+    Rule rule;
+    rule.declarations = declarations;
+    rule.selectors = { vectorToString(selector) };
+    rules.push_back(rule);
+    
+}
+
+vector<Declaration> Parser::consumeDeclList() {
+
+    vector<Declaration> declList;
+
+    while(currentToken().type != TokenType::RBRACE) {
+        Declaration decl = consumeDeclItem();
+        declList.push_back(decl);
+        consumeToken(TokenType::SEMICOLON);
+    }
+
+    return declList;
+}
+
+Declaration Parser::consumeDeclItem() {
+
+    vector<Token> name;
+    vector<Token> value;
+    Declaration dcl;
+
+    while (currentToken().type != TokenType::SEMICOLON) {
+
+        // pick the decl name
+        if (currentToken().type == TokenType::DECLARATION_NAME_START) {
+            advance();
+            while (currentToken().type != TokenType::DECLARATION_NAME_END) {
+                name.push_back(currentToken());
+                advance();
+            }
+            advance();
+        }
+        
+        consumeToken(TokenType::COLON);
+
+        // pick value
+        if (currentToken().type == TokenType::DECLARATION_VALUE_START) {
+            advance();
+            while (currentToken().type != TokenType::DECLARATION_VALUE_END) {
+                value.push_back(currentToken());
+                advance();
+            }
+            advance();
+        }
+
+    }
+    
+    dcl.property = vectorToString(name);
+    dcl.value = vectorToString(value);
+    
+    return dcl;
 }
 
 void Parser::parseSelector() {
@@ -68,8 +127,16 @@ bool Parser::isNestedRule() {
   return false;
 }
 
-void Parser::consumeToken(TokenType type) {
+std::string Parser::vectorToString(vector<Token> _tokens) {
+    std::string name = "";
+    for (int i = 0; i <= (_tokens.size() - 1); i++) {
+        name += _tokens[i].value;
+    }
+    return name;
+}
 
+void Parser::consumeToken(TokenType type) {
+    
     if (currentToken().type != type) {
         throw "Error";
     }

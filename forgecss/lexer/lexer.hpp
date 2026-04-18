@@ -64,8 +64,6 @@ private:
     
     void consumeFunctionCallArgs();
     void changeMode(LexerMode modeToSet);
-    void skipWhiteSpaces();
-    void removeStandaloneSelector(vector<Token>& tokens);
     
 };
 

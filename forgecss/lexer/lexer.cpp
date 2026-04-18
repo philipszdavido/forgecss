@@ -8,7 +8,7 @@
 #include "lexer.hpp"
 
 unordered_map<string, string> keywords = {
-    {"solid", "solid"}
+    { "solid", "solid" }
 };
 
 Lexer::Lexer(string input) : input(input) {
@@ -19,7 +19,7 @@ void Lexer::tokenize() {
     while (!eof()) {
 
         if (isspace(current())) {
-            consumeWhitespace();
+            advance();
             continue;
         }
 
@@ -45,45 +45,7 @@ void Lexer::tokenize() {
     }
 
     add(TokenType::END_OF_FILE, "");
-    
-    // run phases
-    skipWhiteSpaces();
-    
-}
-
-void Lexer::skipWhiteSpaces() {
-    for (int i = int(tokens.size() - 1); i >= 0; i--) {
-        if (tokens[i].type == TokenType::WHITESPACE) {
-            tokens.erase(tokens.begin() + i);
-        }
-    }
-}
-
-void Lexer::removeStandaloneSelector(vector<Token> &tokens) {
-    
-    int seen = 0;
-    int index;
-    
-    for (int i = 0; i <= (tokens.size() - 1); i++) {
         
-        Token newToken = tokens[i];
-        
-        if (newToken.type == TokenType::SELECTOR_START) {
-            seen++;
-            index = i;
-        }
-        
-        if (newToken.type == TokenType::SELECTOR_END) {
-            seen--;
-        }
-                
-    }
-    
-    if (seen > 0) {
-        // remove SELECTOR_START
-//        tokens.erase(tokens.begin() + index);
-    }
-    
 }
 
 void Lexer::tokenizeSelector() {
@@ -92,13 +54,69 @@ void Lexer::tokenizeSelector() {
     if (c == '{') {
         changeMode(LexerMode::DECLARATION_NAME);
         add(TokenType::LBRACE, "{");
+        add(TokenType::DECLARATION_NAME_START, "");
+
         advance();
         return;
     }
         
     if (c == '.') {
         advance();
-        add(TokenType::DOT, consumeIdent());
+        add(TokenType::DOT, ".");
+        return;
+    }
+    
+    if (c == ',') {
+        advance();
+        add(TokenType::COMMA, ",");
+        return;
+    }
+    
+    if (c == '>') {
+        advance();
+        add(TokenType::GT, ">");
+        return;
+    }
+    
+    if (c == '<') {
+        advance();
+        add(TokenType::LT, "<");
+        return;
+    }
+    
+    if (c == '+') {
+        advance();
+        add(TokenType::PLUS, "+");
+        return;
+    }
+    
+    if (c == '|') {
+        advance();
+        add(TokenType::PIPE, "|");
+        return;
+    }
+    
+    if (c == '=') {
+        advance();
+        add(TokenType::EQUALS, "=");
+        return;
+    }
+
+    if (c == '~') {
+        advance();
+        add(TokenType::TILDE, "~");
+        return;
+    }
+    
+    if (isspace(current())) {
+        advance();
+        add(TokenType::WHITESPACE, " ");
+        return;
+    }
+
+    if (c == ' ') {
+        advance();
+        add(TokenType::WHITESPACE, " ");
         return;
     }
 
@@ -107,10 +125,27 @@ void Lexer::tokenizeSelector() {
         add(TokenType::HASH, consumeIdent());
         return;
     }
+    
+    if (c == '[') {
+        advance();
+        add(TokenType::LEFT_SQUARE_BRACE, "[");
+        return;
+    }
 
-    if (c == ':' && next() == ':') {
-        advance(); advance();
-        add(TokenType::DOUBLE_COLON, "::");
+    if (c == ']') {
+        advance();
+        add(TokenType::RIGHT_SQUARE_BRACE, "]");
+        return;
+    }
+
+    if (c == ':') {
+        if (next() == ':') {
+            advance(); advance();
+            add(TokenType::DOUBLE_COLON, "::");
+            return;
+        }
+        advance();
+        add(TokenType::COLON, ":");
         return;
     }
 
@@ -138,11 +173,12 @@ void Lexer::tokenizeSelector() {
             return;
 
         }
-        add(TokenType::IDENT, ident /*consumeIdent()*/ );
+        add(TokenType::IDENT, ident);
         return;
     }
 
     advance();
+    
 }
 
 void Lexer::tokenizeDeclarationName() {
@@ -155,16 +191,20 @@ void Lexer::tokenizeDeclarationName() {
     }
 
     if (current() == ':') {
+        add(TokenType::DECLARATION_NAME_END, "");
+
         add(TokenType::COLON, ":");
         changeMode(LexerMode::DECLARATION_VALUE);
+        add(TokenType::DECLARATION_VALUE_START, "");
+
         advance();
         return;
     }
+    
+    add(TokenType::DECLARATION_NAME_START, "");
 
     if (isAlpha(current()) || current() == '-') {
-        add(TokenType::DECLARATION_NAME_START, "");
         add(TokenType::IDENT, consumeIdent());
-        add(TokenType::DECLARATION_NAME_END, "");
         return;
     }
 
@@ -176,6 +216,7 @@ void Lexer::tokenizeDeclarationValue() {
     char c = current();
 
     if (c == ';') {
+        add(TokenType::DECLARATION_VALUE_END, "");
         add(TokenType::SEMICOLON, ";");
         changeMode(LexerMode::DECLARATION_NAME);
         advance();
@@ -189,65 +230,42 @@ void Lexer::tokenizeDeclarationValue() {
         return;
     }
 
-    add(TokenType::DECLARATION_VALUE_START, "");
-
     if (c == '"' || c == '\'') {
         add(TokenType::STRING, consumeString());
-
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
 
     if (isDigit(c) || (c == '.' && isDigit(next()))) {
         consumeNumber();
-        
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
 
     if (isAlpha(c)) {
         consumeIdentLike();
-        
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
 
     if (c == '#') {
         advance();
         add(TokenType::HASH, consumeIdent());
-        
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
 
     if (c == ',') {
         add(TokenType::COMMA, ",");
         advance();
-        
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
 
     if (c == '(') {
         add(TokenType::LPAREN, "(");
         advance();
-        
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
 
     if (c == ')') {
         add(TokenType::RPAREN, ")");
         advance();
-        
-        add(TokenType::DECLARATION_VALUE_END, "");
-
         return;
     }
     
@@ -257,8 +275,6 @@ void Lexer::tokenizeDeclarationValue() {
             string value = consumeVariable();
             add(TokenType::VARIABLE, value);
             
-            add(TokenType::DECLARATION_VALUE_END, "");
-
             return;
         }
     }
@@ -269,11 +285,27 @@ void Lexer::tokenizeDeclarationValue() {
 void Lexer::changeMode(LexerMode modeToSet) {
     
     if (mode != LexerMode::SELECTOR && modeToSet == LexerMode::SELECTOR) {
+        
+        // check if we reached end of file
+        if (index >= (input.size() - 1)) {
+            return;
+        }
+        
+        // check if the next thing is not @
+        int i = (int)index + 1;
+        while(isspace(input[i])) {
+            if (input[i + 1] == '@') {
+                return;
+            } else if (!isspace(input[i + 1])) break;
+            i++;
+        }
+        
         add(TokenType::SELECTOR_START, "");
+        
     } else if (mode == LexerMode::SELECTOR && modeToSet != LexerMode::SELECTOR) {
         add(TokenType::SELECTOR_END, "");
     }
-    
+
     mode = modeToSet;
 }
 
@@ -428,10 +460,26 @@ void Lexer::consumeAtRule() {
 
     string name = consumeIdent();
     add(TokenType::AT_KEYWORD, name);
+    
+    string mediaText = "";
 
     while (!eof() && current() != '{') {
-        tokenizeDeclarationValue();
+//        tokenizeDeclarationValue();
+        mediaText += current();
+        advance();
     }
+//    std::cout << current() << std::endl;
+//    add(TokenType::MEDIA_START, "");
+    add(TokenType::LBRACE, "{");
+    advance();
+    
+    changeMode(LexerMode::SELECTOR);
+//    tokenizeSelector();
+//    
+//    advance();
+//    
+//    add(TokenType::MEDIA_END, "");
+    
 }
 
 void Lexer::consumeWhitespace() {
