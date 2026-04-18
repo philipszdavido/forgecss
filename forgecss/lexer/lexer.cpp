@@ -27,6 +27,13 @@ void Lexer::tokenize() {
             consumeAtRule();
             continue;
         }
+        
+        if (current() == '}') {
+            add(TokenType::RBRACE, "}");
+            advance();
+            changeMode(LexerMode::SELECTOR);
+            continue;
+        }
 
         switch (mode) {
 
@@ -201,8 +208,10 @@ void Lexer::tokenizeDeclarationName() {
         return;
     }
     
-    add(TokenType::DECLARATION_NAME_START, "");
-
+    if (tokens[tokens.size() - 1].type != TokenType::DECLARATION_NAME_START) {
+        add(TokenType::DECLARATION_NAME_START, "");
+    }
+    
     if (isAlpha(current()) || current() == '-') {
         add(TokenType::IDENT, consumeIdent());
         return;
@@ -457,29 +466,59 @@ string Lexer::consumeIdent() {
 
 void Lexer::consumeAtRule() {
     advance();
-
+    
+    int blockDepth = 0;
+//    if (c == '{') blockDepth++;
+//    if (c == '}') blockDepth--;
+    
     string name = consumeIdent();
     add(TokenType::AT_KEYWORD, name);
-    
-    string mediaText = "";
 
     while (!eof() && current() != '{') {
-//        tokenizeDeclarationValue();
-        mediaText += current();
+        char c = current();
+
+        if (isspace(c)) {
+            consumeWhitespace();
+            continue;
+        }
+
+        if (isAlpha(c)) {
+            add(TokenType::IDENT, consumeIdent());
+            continue;
+        }
+
+        if (c == '(') {
+            add(TokenType::LPAREN, "(");
+            advance();
+            continue;
+        }
+
+        if (c == ')') {
+            add(TokenType::RPAREN, ")");
+            advance();
+            continue;
+        }
+
+        if (c == ':') {
+            add(TokenType::COLON, ":");
+            advance();
+            continue;
+        }
+
+        if (isDigit(c)) {
+            consumeNumber();
+            continue;
+        }
+
         advance();
     }
-//    std::cout << current() << std::endl;
-//    add(TokenType::MEDIA_START, "");
-    add(TokenType::LBRACE, "{");
-    advance();
-    
+
+    if (current() == '{') {
+        add(TokenType::LBRACE, "{");
+        advance();
+    }
+
     changeMode(LexerMode::SELECTOR);
-//    tokenizeSelector();
-//    
-//    advance();
-//    
-//    add(TokenType::MEDIA_END, "");
-    
 }
 
 void Lexer::consumeWhitespace() {

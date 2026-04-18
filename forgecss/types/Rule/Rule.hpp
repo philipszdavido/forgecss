@@ -24,4 +24,11 @@ public:
     std::vector<Rule> children;
 };
 
+class MediaRule {
+public:
+    std::vector<std::string> media;
+    std::vector<Rule> rules;
+    std::vector<MediaRule> mediaRules;
+};
+
 #endif /* Rule_hpp */

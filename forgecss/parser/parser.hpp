@@ -19,12 +19,17 @@ enum class ParserMode {
     DECLARATION_VALUE
 };
 
+struct CSSRule {
+    int type;
+    Rule rule;
+    MediaRule mediaRule;
+};
+
 class Parser {
 
 private:
     int index = 0;
     Token currentToken();
-    ParserMode mode = ParserMode::SELECTOR;
     
     void advance();
     size_t size();
@@ -34,16 +39,15 @@ private:
     void parseDeclarationName();
     void parseDeclarationValue();
     
-//    pushState(DeclarationList);
-//    popState();
-    void consumeSelector();
+    Rule consumeSelector();
     void consumeToken(TokenType type);
     std::string vectorToString(vector<Token> _tokens);
     Declaration consumeDeclItem();
     vector<Declaration> consumeDeclList();
-
+    MediaRule consumeMedia();
+    
   public:
-    std::vector<Rule> rules;
+    std::vector<CSSRule> rules;
     const std::vector<Token> tokens;
     Parser(const std::vector<Token> tokens) : tokens(tokens) {};
     

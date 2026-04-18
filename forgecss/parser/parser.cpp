@@ -16,7 +16,19 @@ void Parser::parse() {
         // if selector_start
         // consume till }
         if (token.type == TokenType::SELECTOR_START && tokens[index + 1].type != TokenType::END_OF_FILE) {
-            consumeSelector();
+            Rule rule = consumeSelector();
+            CSSRule r;
+            r.rule = rule;
+            r.type = 0;
+            rules.push_back(r);
+        }
+        
+        if (token.type == TokenType::AT_KEYWORD) {
+            MediaRule mediaRule = consumeMedia();
+            CSSRule r;
+            r.mediaRule = mediaRule;
+            r.type = 1;
+            rules.push_back(r);
         }
 
         advance();
@@ -24,7 +36,7 @@ void Parser::parse() {
     
 }
 
-void Parser::consumeSelector() {
+Rule Parser::consumeSelector() {
     
     vector<Token> selector;
     vector<Declaration> declarations;
@@ -47,7 +59,7 @@ void Parser::consumeSelector() {
     Rule rule;
     rule.declarations = declarations;
     rule.selectors = { vectorToString(selector) };
-    rules.push_back(rule);
+    return rule;
     
 }
 
@@ -100,6 +112,47 @@ Declaration Parser::consumeDeclItem() {
     dcl.value = vectorToString(value);
     
     return dcl;
+}
+
+MediaRule Parser::consumeMedia() {
+    
+    // consume till {
+    vector<Token> media;
+    vector<Rule> rules;
+    vector<MediaRule> mediaRules;
+    
+    advance();
+
+    while(currentToken().type != TokenType::LBRACE) {
+        media.push_back(currentToken());
+        advance();
+    }
+    
+    // {
+    advance();
+    
+    while (currentToken().type != TokenType::RBRACE) {
+        
+        if (currentToken().type == TokenType::SELECTOR_START && tokens[index + 1].type != TokenType::END_OF_FILE) {
+            Rule rule = consumeSelector();
+            rules.push_back(rule);
+        }
+        
+        if (currentToken().type == TokenType::AT_KEYWORD) {
+            MediaRule mediaRule = consumeMedia();
+            mediaRules.push_back(mediaRule);
+        }
+        
+    }
+    
+    consumeToken(TokenType::RBRACE);
+    
+    MediaRule mediaRule;
+    mediaRule.rules = rules;
+    mediaRule.mediaRules = mediaRules;
+    
+    return mediaRule;
+    
 }
 
 void Parser::parseSelector() {
