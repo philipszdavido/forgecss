@@ -26,6 +26,10 @@ enum class TokenType {
 
     DOT, HASH, IDENT,
     DOUBLE_COLON,
+    LEFT_SQUARE_BRACE,
+    RIGHT_SQUARE_BRACE,
+    GT, LT, PLUS, TILDE,
+    PIPE, EQUALS,
 
     NUMBER,
     DIMENSION,
@@ -46,6 +50,7 @@ enum class TokenType {
     DECLARATION_VALUE_END,
     SELECTOR_START,
     SELECTOR_END,
+    MEDIA_START, MEDIA_END,
 
     WHITESPACE,
     DELIM,

@@ -24,6 +24,8 @@ void printTokenType(TokenType type) {
         case TokenType::HASH: std::cout << "HASH"; break;
         case TokenType::IDENT: std::cout << "IDENT"; break;
         case TokenType::DOUBLE_COLON: std::cout << "DOUBLE_COLON"; break;
+        case TokenType::LEFT_SQUARE_BRACE: std::cout << "LEFT_SQUARE_BRACE"; break;
+        case TokenType::RIGHT_SQUARE_BRACE: std::cout << "RIGHT_SQUARE_BRACE"; break;
 
         case TokenType::NUMBER: std::cout << "NUMBER"; break;
         case TokenType::DIMENSION: std::cout << "DIMENSION"; break;
@@ -36,6 +38,8 @@ void printTokenType(TokenType type) {
         case TokenType::VALUE_END: std::cout << "VALUE_END"; break;
         case TokenType::SELECTOR_START: std::cout << "SELECTOR_START"; break;
         case TokenType::SELECTOR_END: std::cout << "SELECTOR_END"; break;
+        case TokenType::MEDIA_START: std::cout << "MEDIA_START"; break;
+        case TokenType::MEDIA_END: std::cout << "MEDIA_END"; break;
 
 
         case TokenType::AT_KEYWORD: std::cout << "AT_KEYWORD"; break;
