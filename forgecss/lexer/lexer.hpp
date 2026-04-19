@@ -64,6 +64,8 @@ private:
     
     void consumeFunctionCallArgs();
     void changeMode(LexerMode modeToSet);
+    bool isNestedRule();
+    bool isNextChar(char v);
     
 };
 

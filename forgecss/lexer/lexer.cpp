@@ -59,8 +59,20 @@ void Lexer::tokenizeSelector() {
     char c = current();
     
     if (c == '{') {
+        
+        // check if next is empty body
+        if (isNextChar('}')) {
+
+            changeMode(LexerMode::DECLARATION_NAME);
+
+            add(TokenType::LBRACE, "{");
+            advance();
+            return;
+        }
+
         changeMode(LexerMode::DECLARATION_NAME);
         add(TokenType::LBRACE, "{");
+        
         add(TokenType::DECLARATION_NAME_START, "");
 
         advance();
@@ -227,6 +239,14 @@ void Lexer::tokenizeDeclarationValue() {
     if (c == ';') {
         add(TokenType::DECLARATION_VALUE_END, "");
         add(TokenType::SEMICOLON, ";");
+
+        // check to see if next is nested rule
+        if (isNestedRule()) {
+            changeMode(LexerMode::SELECTOR);
+            advance();
+            return; //tokenizeSelector();
+        }
+
         changeMode(LexerMode::DECLARATION_NAME);
         advance();
         return;
@@ -307,6 +327,12 @@ void Lexer::changeMode(LexerMode modeToSet) {
                 return;
             } else if (!isspace(input[i + 1])) break;
             i++;
+        }
+        
+        // if there is nothing till we hit }, skip
+        
+        if (tokens[tokens.size() - 1].value == "}") {
+            return;
         }
         
         add(TokenType::SELECTOR_START, "");
@@ -465,12 +491,9 @@ string Lexer::consumeIdent() {
 }
 
 void Lexer::consumeAtRule() {
+    
     advance();
-    
-    int blockDepth = 0;
-//    if (c == '{') blockDepth++;
-//    if (c == '}') blockDepth--;
-    
+        
     string name = consumeIdent();
     add(TokenType::AT_KEYWORD, name);
 
@@ -608,6 +631,35 @@ void Lexer::consumeFunctionCallArgs() {
     }
 
     advance();
+}
+
+bool Lexer::isNextChar(char v) {
+  int j = (int)index + 1;
+
+    while (j < input.size()) {
+        const char c = input[j];
+        if (c == v) return true;
+        if (!isspace(input[j])) return false;
+        j++;
+    }
+
+  return false;
+    
+}
+
+bool Lexer::isNestedRule() {
+  // Look ahead until we find '{' or ':'
+  int j = (int)index;
+
+    while (j < input.size()) {
+        if (input[j] == '{') return true;  // nested rule
+        if (input[j] == ':') return false;  // declaration
+        if (input[j] == '}') return false;  // declaration
+    j++;
+  }
+
+  return false;
+    
 }
 
 char Lexer::current() {

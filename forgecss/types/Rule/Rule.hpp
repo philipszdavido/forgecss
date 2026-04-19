@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <vector>
 
+using namespace std;
+
 class Declaration {
 public:
     std::string property;
@@ -29,6 +31,13 @@ public:
     std::vector<std::string> media;
     std::vector<Rule> rules;
     std::vector<MediaRule> mediaRules;
+};
+
+class R {
+public:
+    vector<Declaration> declList;
+    vector<Rule> rules;
+    vector<MediaRule> mediaRules;
 };
 
 #endif /* Rule_hpp */

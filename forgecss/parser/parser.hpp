@@ -13,12 +13,6 @@
 #include "./../token/token.hpp"
 #include "../types/Rule/Rule.hpp"
 
-enum class ParserMode {
-    SELECTOR,
-    DECLARATION_NAME,
-    DECLARATION_VALUE
-};
-
 struct CSSRule {
     int type;
     Rule rule;
@@ -35,15 +29,15 @@ private:
     size_t size();
     
     bool isNestedRule();
-    void parseSelector();
-    void parseDeclarationName();
-    void parseDeclarationValue();
+    void parseSelector(vector<Token> selectors);
+    void parseDeclarationName(vector<Token> selectors);
+    void parseDeclarationValue(vector<Token> selectors);
     
     Rule consumeSelector();
-    void consumeToken(TokenType type);
+    void consumeToken(TokenType type, string msg);
     std::string vectorToString(vector<Token> _tokens);
     Declaration consumeDeclItem();
-    vector<Declaration> consumeDeclList();
+    R consumeDeclList();
     MediaRule consumeMedia();
     
   public:
