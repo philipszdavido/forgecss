@@ -18,6 +18,11 @@ using namespace std;
 
 enum class TokenType {
     
+    LEFT_BRACE, RIGHT_BRACE,
+    LEFT_PAREN, RIGHT_PAREN,
+    LEFT_BRACKET, RIGHT_BRACKET,
+    BAD_STRING,
+    
     LBRACE, RBRACE,
     LPAREN, RPAREN,
     LBRACKET, RBRACKET,

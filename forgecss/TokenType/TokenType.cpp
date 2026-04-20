@@ -9,6 +9,15 @@
 
 void printTokenType(TokenType type) {
     switch (type) {
+            
+        case TokenType::LEFT_BRACE: std::cout << "LEFT_BRACE"; break;
+        case TokenType::RIGHT_BRACE: std::cout << "RIGHT_BRACE"; break;
+        case TokenType::LEFT_PAREN: std::cout << "LEFT_PAREN"; break;
+        case TokenType::RIGHT_PAREN: std::cout << "RIGHT_PAREN"; break;
+        case TokenType::LEFT_BRACKET: std::cout << "LEFT_BRACKET"; break;
+        case TokenType::RIGHT_BRACKET: std::cout << "RIGHT_BRACKET"; break;
+        case TokenType::BAD_STRING: std::cout << "BAD_STRING"; break;
+
         case TokenType::LBRACE: std::cout << "LBRACE"; break;
         case TokenType::RBRACE: std::cout << "RBRACE"; break;
         case TokenType::LPAREN: std::cout << "LPAREN"; break;

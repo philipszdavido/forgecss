@@ -19,6 +19,56 @@
 #include "../token/token.hpp"
 
 using namespace std;
+//
+//enum class LexerMode {
+//    SELECTOR,
+//    DECLARATION_NAME,
+//    DECLARATION_VALUE
+//};
+//
+//class Lexer {
+//public:
+//    Lexer(string input);
+//    void tokenize();
+//    vector<Token> tokens;
+//
+//private:
+//    string input;
+//    size_t index = 0;
+//    LexerMode mode = LexerMode::SELECTOR;
+//
+//    char current();
+//    char next();
+//    bool eof();
+//    void advance();
+//    void reverse();
+//    
+//    bool isAlpha(char c);
+//    bool isDigit(char c);
+//    bool isAlphaNumeric(char c);
+//
+//    void add(TokenType type, string value);
+//
+//    void consumeWhitespace();
+//    string consumeIdent();
+//    string consumeString();
+//    void consumeNumber();
+//    void consumeIdentLike();
+//    void consumeURL();
+//    void consumeAtRule();
+//    string consumeToSemiColon();
+//    string consumeVariable();
+//
+//    void tokenizeSelector();
+//    void tokenizeDeclarationName();
+//    void tokenizeDeclarationValue();
+//    
+//    void consumeFunctionCallArgs();
+//    void changeMode(LexerMode modeToSet);
+//    bool isNestedRule();
+//    bool isNextChar(char v);
+//    
+//};
 
 enum class LexerMode {
     SELECTOR,
@@ -35,12 +85,24 @@ public:
 private:
     string input;
     size_t index = 0;
-    LexerMode mode = LexerMode::SELECTOR;
 
+    vector<LexerMode> modeStack;
+
+    // mode helpers
+    LexerMode mode();
+    void pushMode(LexerMode m);
+    void popMode();
+
+    // core
+    void tokenizeSelector();
+    void tokenizeDeclarationName();
+    void tokenizeDeclarationValue();
+
+    // helpers
     char current();
     char next();
-    bool eof();
     void advance();
+    bool eof();
 
     bool isAlpha(char c);
     bool isDigit(char c);
@@ -48,25 +110,19 @@ private:
 
     void add(TokenType type, string value);
 
-    void consumeWhitespace();
+    // consumers
     string consumeIdent();
     string consumeString();
+    string consumeVariable();
     void consumeNumber();
     void consumeIdentLike();
-    void consumeURL();
-    void consumeAtRule();
-    string consumeToSemiColon();
-    string consumeVariable();
-
-    void tokenizeSelector();
-    void tokenizeDeclarationName();
-    void tokenizeDeclarationValue();
-    
     void consumeFunctionCallArgs();
-    void changeMode(LexerMode modeToSet);
-    bool isNestedRule();
-    bool isNextChar(char v);
-    
+    void consumeURL();
+    void consumeWhitespace();
+    void consumeAtRule();
+
+    // logic
+    bool isStartOfSelector();
 };
 
 #endif /* lexer_hpp */

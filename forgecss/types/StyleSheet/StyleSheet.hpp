@@ -1,24 +1,24 @@
+////
+////  StyleSheet.hpp
+////  forgecss
+////
+////  Created by Chidume Nnamdi on 13/04/2026.
+////
 //
-//  StyleSheet.hpp
-//  forgecss
+//#ifndef StyleSheet_hpp
+//#define StyleSheet_hpp
 //
-//  Created by Chidume Nnamdi on 13/04/2026.
+//#include <stdio.h>
+//#include <vector>
 //
-
-#ifndef StyleSheet_hpp
-#define StyleSheet_hpp
-
-#include <stdio.h>
-#include <vector>
-
-#include "../Rule/Rule.hpp"
-
-class Stylesheet {
-
-public:
-    
-    std::vector<Rule> rules;
-    
-};
-
-#endif /* StyleSheet_hpp */
+//#include "../Rule/Rule.hpp"
+//
+//class Stylesheet {
+//
+//public:
+//    
+//    std::vector<Rule> rules;
+//    
+//};
+//
+//#endif /* StyleSheet_hpp */
