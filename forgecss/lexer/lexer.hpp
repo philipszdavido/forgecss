@@ -24,7 +24,6 @@ private:
     char current();
     char next(int offset = 1);
     void advance();
-
     bool eof();
 
     bool isWhitespace(char c);

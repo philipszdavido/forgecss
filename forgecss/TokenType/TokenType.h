@@ -31,7 +31,7 @@ enum class TokenType {
     LEFT_SQUARE_BRACE,
     RIGHT_SQUARE_BRACE,
     GT, LT, PLUS, TILDE,
-    PIPE, EQUALS,
+    PIPE, EQUALS, AND, 
 
     NUMBER,
     DIMENSION,

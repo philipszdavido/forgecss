@@ -63,7 +63,7 @@ StyleRule Parser::parseStyleRule() {
         bool isNested = false;
 
         while (temp < tokens.size()) {
-            if (tokens[temp].type == TokenType::LEFT_BRACE) {
+            if (tokens[temp].type == TokenType::LEFT_BRACE || tokens[temp].type == TokenType::AND) {
                 isNested = true;
                 break;
             }
@@ -218,6 +218,93 @@ string Parser::parseComponentValue() {
     advance();
     return value;
 }
+
+//void Parser::parseSelector(tokens) {
+//    
+//  const parts = [];
+//
+//  while (tokens.length) {
+//    let t = tokens.shift();
+//
+//    if (t.type === "DOT") {
+//      let name = tokens.shift().value;
+//      parts.push({ type: "ClassSelector", name });
+//    }
+//
+//    else if (t.type === "LBRACKET") {
+//      let name = tokens.shift().value;
+//      tokens.shift(); // RBRACKET
+//      parts.push({ type: "AttributeSelector", name });
+//    }
+//
+//    else if (t.type === "DOUBLE_COLON") {
+//      let name = tokens.shift().value;
+//      tokens.shift(); // LPAREN
+//      let arg = tokens.shift().value;
+//      tokens.shift(); // RPAREN
+//
+//      parts.push({
+//        type: "PseudoElement",
+//        name,
+//        argument: arg
+//      });
+//    }
+//
+//    else {
+//      break;
+//    }
+//  }
+//
+//  return parts;
+//}
+//
+//void Parser::parseValue(tokens) {
+//  const values = [];
+//
+//  while (tokens.length && tokens[0].type !== "SEMICOLON") {
+//    let t = tokens.shift();
+//
+//    if (t.type === "DIMENSION") {
+//      values.push({
+//        type: "Dimension",
+//        value: parseFloat(t.value),
+//        unit: t.unit
+//      });
+//    }
+//
+//    else if (t.type === "HASH") {
+//      values.push({
+//        type: "Color",
+//        value: t.value
+//      });
+//    }
+//
+//    else if (t.type === "FUNCTION") {
+//      let args = [];
+//
+//      tokens.shift(); // LPAREN
+//      while (tokens[0].type !== "RPAREN") {
+//        args.push(tokens.shift().value);
+//      }
+//      tokens.shift(); // RPAREN
+//
+//      values.push({
+//        type: "Function",
+//        name: t.name,
+//        args
+//      });
+//    }
+//
+//    else if (t.type === "IDENT") {
+//      values.push({
+//        type: "Keyword",
+//        value: t.value
+//      });
+//    }
+//  }
+//
+//  return values;
+//}
 
 Token Parser::current() { return tokens[pos]; }
 Token Parser::next() { return tokens[pos + 1]; }

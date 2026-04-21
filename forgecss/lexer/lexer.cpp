@@ -77,6 +77,9 @@ std::vector<Token> Tokenizer::tokenize() {
             case ':': tokens.emplace_back(TokenType::COLON); break;
             case ';': tokens.emplace_back(TokenType::SEMICOLON); break;
             case ',': tokens.emplace_back(TokenType::COMMA); break;
+            case '&': tokens.emplace_back(TokenType::AND); break;
+            case '>': tokens.emplace_back(TokenType::GT); break;
+            case '<': tokens.emplace_back(TokenType::LT); break;
             default:
                 tokens.emplace_back(TokenType::DELIM, std::string(1, c));
         }

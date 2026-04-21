@@ -28,6 +28,7 @@ void printTokenType(TokenType type) {
         case TokenType::DOUBLE_COLON: std::cout << "DOUBLE_COLON"; break;
         case TokenType::LEFT_SQUARE_BRACE: std::cout << "LEFT_SQUARE_BRACE"; break;
         case TokenType::RIGHT_SQUARE_BRACE: std::cout << "RIGHT_SQUARE_BRACE"; break;
+        case TokenType::AND: std::cout << "AND"; break;
 
         case TokenType::NUMBER: std::cout << "NUMBER"; break;
         case TokenType::DIMENSION: std::cout << "DIMENSION"; break;

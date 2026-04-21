@@ -14,6 +14,14 @@
 
 using namespace std;
 
+struct Color {
+    
+};
+
+struct Dimension {
+    
+};
+
 struct Declaration {
     string name;
     string value;
