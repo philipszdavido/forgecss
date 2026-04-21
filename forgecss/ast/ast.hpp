@@ -11,16 +11,13 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include "./selectors/includes.h"
 
 using namespace std;
 
-struct Color {
-    
-};
-
-struct Dimension {
-    
-};
+struct Color {};
+struct Dimension {};
+struct Variable {};
 
 struct Declaration {
     string name;
@@ -31,6 +28,7 @@ struct Rule;
 
 struct StyleRule {
     vector<string> selectors;
+    vector<Selector> _selectors;
     vector<Declaration> declarations;
     vector<Rule> nestedRules;
 };
