@@ -43,12 +43,12 @@ int main(int argc, const char * argv[]) {
         background: yellow;
     }
 
-@media screen and (min-width: 480px) {
-    body {
-        background-color: lightgreen;
-      color: var(--green);
+    @media screen and (min-width: 480px) {
+        body {
+            background-color: lightgreen;
+          color: var(--green);
+        }
     }
-}
 
 )";
     
@@ -62,14 +62,14 @@ int main(int argc, const char * argv[]) {
 }
 
     p {
-@media screen and (min-width: 480px) {
-    body {
-        background-color: lightgreen;
-      color: var(--green);
-    }
-}
+        @media screen and (min-width: 480px) {
+            body {
+                background-color: lightgreen;
+              color: var(--green);
+            }
+        }
 
-    bg: red;
+        bg: red;
         div {
             font-family: Roboto, sans-serif;
         }

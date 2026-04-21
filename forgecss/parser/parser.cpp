@@ -84,6 +84,8 @@ StyleRule Parser::parseStyleRule() {
             rule.declarations.insert(rule.declarations.end(), decls.begin(), decls.end());
         }
     }
+    
+    consumeWhiteSpaces();
 
     if (current().type == TokenType::RIGHT_BRACE) {
         advance();
@@ -113,6 +115,8 @@ AtRule Parser::parseAtRule() {
         }
         rule.rules.push_back(parseRule());
     }
+    
+    consumeWhiteSpaces();
 
     if (current().type == TokenType::RIGHT_BRACE) {
         advance();
@@ -225,15 +229,22 @@ bool Parser::eof() {
 }
 
 bool Parser::match(TokenType type) {
-    if (current().type == type) {
-        advance();
-        return true;
-    }
-    return false;
+    if (current().type != type) return false;
+
+    advance();
+    return true;
+
 }
 
 void Parser::consumeWhiteSpaces() {
-    while (current().type == TokenType::WHITESPACE) {
-        advance();
-    }
+    while (current().type == TokenType::WHITESPACE) advance();
+}
+
+void Parser::consumeTokenType(TokenType type, string errorMsg) {
+    if (eof()) return;
+    
+    if (current().type != type) throw runtime_error(errorMsg);
+    
+    advance();
+    
 }

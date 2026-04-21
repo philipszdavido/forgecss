@@ -40,6 +40,7 @@ private:
 
     string parseComponentValue();
     void consumeWhiteSpaces();
+    void consumeTokenType(TokenType type, string errorMsg);
 };
 
 #endif /* CSSParser_hpp */
