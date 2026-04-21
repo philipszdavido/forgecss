@@ -18,13 +18,6 @@ void printTokenType(TokenType type) {
         case TokenType::RIGHT_BRACKET: std::cout << "RIGHT_BRACKET"; break;
         case TokenType::BAD_STRING: std::cout << "BAD_STRING"; break;
 
-        case TokenType::LBRACE: std::cout << "LBRACE"; break;
-        case TokenType::RBRACE: std::cout << "RBRACE"; break;
-        case TokenType::LPAREN: std::cout << "LPAREN"; break;
-        case TokenType::RPAREN: std::cout << "RPAREN"; break;
-        case TokenType::LBRACKET: std::cout << "LBRACKET"; break;
-        case TokenType::RBRACKET: std::cout << "RBRACKET"; break;
-
         case TokenType::COLON: std::cout << "COLON"; break;
         case TokenType::SEMICOLON: std::cout << "SEMICOLON"; break;
         case TokenType::COMMA: std::cout << "COMMA"; break;

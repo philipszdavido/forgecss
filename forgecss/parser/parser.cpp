@@ -1,240 +1,239 @@
-////
-////  parser.cpp
-////  forgecss
-////
-////  Created by Chidume Nnamdi on 13/04/2026.
-////
 //
-//#include "parser.hpp"
+//  Parser.cpp
+//  forgecss
 //
-//void Parser::parse() {
-//    
-//    while (currentToken().type != TokenType::END_OF_FILE) {
-//        
-//        Token token = currentToken();
-//        
-//        // if selector_start
-//        // consume till }
-//        if (token.type == TokenType::SELECTOR_START && tokens[index + 1].type != TokenType::END_OF_FILE) {
-//            Rule rule = consumeSelector();
-//            CSSRule r;
-//            r.rule = rule;
-//            r.type = 0;
-//            rules.push_back(r);
-//        }
-//        
-//        if (token.type == TokenType::AT_KEYWORD) {
-//            MediaRule mediaRule = consumeMedia();
-//            CSSRule r;
-//            r.mediaRule = mediaRule;
-//            r.type = 1;
-//            rules.push_back(r);
-//        }
+//  Created by Chidume Nnamdi on 20/04/2026.
 //
-//        advance();
-//    }
-//    
-//}
-//
-//Rule Parser::consumeSelector() {
-//    
-//    vector<Token> selector;
-//    
-//    consumeToken(TokenType::SELECTOR_START, "Expected to be start of selector.");
-//    
-//    while (currentToken().type != TokenType::SELECTOR_END) {
-//        selector.push_back(currentToken());
-//        advance();
-//    }
-//    
-//    consumeToken(TokenType::SELECTOR_END, "Expected to be end of selector.");
-//    
-//    consumeToken(TokenType::LBRACE, "Expected to see '{'.");
-//    
-//    // pick declarations till }
-//    R declarations = consumeDeclList();
-//    string selectorName = vectorToString(selector);
-//        
-//    Rule rule;
-//    rule.declarations = declarations.declList;
-//    rule.children = declarations.rules;
-//    rule.mediaRules = declarations.mediaRules;
-//    
-//    rule.selectors = { vectorToString(selector) };
-//    return rule;
-//    
-//}
-//
-//R Parser::consumeDeclList() {
-//
-//    vector<Declaration> declList;
-//    vector<Rule> rules;
-//    vector<MediaRule> mediaRules;
-//    R decls;
-//
-//    while(currentToken().type != TokenType::RBRACE) {
-//
-//        if (currentToken().type == TokenType::SELECTOR_START) {
-//            Rule r = consumeSelector();
-//            rules.push_back(r);
-//            consumeToken(TokenType::RBRACE, "Expected '}'");
-//
-//        } else if (currentToken().type == TokenType::AT_KEYWORD) {
-//            MediaRule mediaRule = consumeMedia();
-//            mediaRules.push_back(mediaRule);
-//            // consume }
-//            consumeToken(TokenType::RBRACE, "Expected '}'.");
-//        }
-//        else {
-//            
-//            Declaration decl = consumeDeclItem();
-//            declList.push_back(decl);
-//            consumeToken(TokenType::SEMICOLON, "Expected to see ';'");
-//            
-//        }
-//    }
-//    
-//    decls.declList = declList;
-//    decls.rules = rules;
-//    decls.mediaRules = mediaRules;
-//
-//    return decls;
-//}
-//
-//Declaration Parser::consumeDeclItem() {
-//    
-//    vector<Token> name;
-//    vector<Token> value;
-//    Declaration dcl;
-//    
-//    while (currentToken().type != TokenType::SEMICOLON) {
-//            
-//        // pick the decl name
-//
-//        consumeToken(TokenType::DECLARATION_NAME_START, "Expected to see 'DECLARATION_NAME_START'");
-//        while (currentToken().type != TokenType::DECLARATION_NAME_END) {
-//            name.push_back(currentToken());
-//            advance();
-//        }
-//        
-//        consumeToken(TokenType::DECLARATION_NAME_END, "Expected to see 'DECLARATION_NAME_END'");
-//        
-//        consumeToken(TokenType::COLON, "Expected to see ':'");
-//        
-//        // pick value
-//        if (currentToken().type == TokenType::DECLARATION_VALUE_START) {
-//            advance();
-//            while (currentToken().type != TokenType::DECLARATION_VALUE_END) {
-//                value.push_back(currentToken());
-//                advance();
-//            }
-//            advance();
-//        }
-//        
-//    }
-//    
-//    dcl.property = vectorToString(name);
-//    dcl.value = vectorToString(value);
-//    
-//    return dcl;
-//}
-//
-//MediaRule Parser::consumeMedia() {
-//    
-//    // consume till {
-//    vector<Token> media;
-//    vector<Rule> rules;
-//    vector<MediaRule> mediaRules;
-//    
-//    advance();
-//
-//    while(currentToken().type != TokenType::LBRACE) {
-//        media.push_back(currentToken());
-//        advance();
-//    }
-//    
-//    // {
-//    consumeToken(TokenType::LBRACE, "Expected '{'.");
-//
-//    while (currentToken().type != TokenType::RBRACE) {
-//        
-//        if (currentToken().type == TokenType::SELECTOR_START && tokens[index + 1].type != TokenType::END_OF_FILE) {
-//            Rule rule = consumeSelector();
-//            rules.push_back(rule);
-//        } else if (currentToken().type == TokenType::AT_KEYWORD) {
-//            MediaRule mediaRule = consumeMedia();
-//            mediaRules.push_back(mediaRule);
-//        }
-//        
-//    }
-//    
-//    consumeToken(TokenType::RBRACE, "Expected '}'.");
-//    
-//    MediaRule mediaRule;
-//    mediaRule.rules = rules;
-//    mediaRule.mediaRules = mediaRules;
-//    
-//    return mediaRule;
-//    
-//}
-//
-//void Parser::parseSelector(vector<Token> selectors) {
-//    
-//}
-//
-//void Parser::parseDeclarationName(vector<Token> selectors) {
-//    
-//}
-//
-//void Parser::parseDeclarationValue(vector<Token> selectors) {
-//    
-//}
-//
-//bool Parser::isNestedRule() {
-//  // Look ahead until we find '{' or ':'
-////  let j = i;
-////
-////  while (j < tokens.length) {
-////    if (tokens[j].type === "LBRACE") return true;  // nested rule
-////    if (tokens[j].type === "COLON") return false;  // declaration
-////    j++;
-////  }
-//
-//  return false;
-//}
-//
-//std::string Parser::vectorToString(vector<Token> _tokens) {
-//    std::string name = "";
-//    for (int i = 0; i <= (_tokens.size() - 1); i++) {
-//        name += _tokens[i].value;
-//    }
-//    return name;
-//}
-//
-//void Parser::consumeToken(TokenType type, string msg) {
-//    
-//    if (currentToken().type != type) {
-//        throw runtime_error(msg);
-//    }
-//    
-//    advance();
-//
-//}
-//
-//Token Parser::currentToken() {
-//    return tokens[index];
-//}
-//
-//size_t Parser::size() {
-//    return tokens.size();
-//}
-//
-//void Parser::advance() {
-//    
-//    if ((index + 1) > tokens.size()) {
-//        throw "Out of bounds.";
-//    }
-//    
-//    index++;
-//    
-//}
+
+#include "Parser.hpp"
+
+Parser::Parser(const std::vector<Token>& tokens) : tokens(tokens) {}
+
+Stylesheet Parser::parse() {
+    Stylesheet sheet;
+
+    while (!eof()) {
+        if (current().type == TokenType::WHITESPACE) {
+            advance();
+            continue;
+        }
+
+        sheet.rules.push_back(parseRule());
+    }
+
+    return sheet;
+}
+
+Rule Parser::parseRule() {
+    Rule rule;
+
+    if (current().type == TokenType::AT_KEYWORD) {
+        rule.isAtRule = true;
+        rule.at = parseAtRule();
+    } else {
+        rule.isAtRule = false;
+        rule.style = parseStyleRule();
+    }
+
+    return rule;
+}
+
+StyleRule Parser::parseStyleRule() {
+    StyleRule rule;
+
+    rule.selectors = parseSelectorList();
+
+    if (current().type == TokenType::LEFT_BRACE) {
+        advance();
+    }
+
+    while (!eof() && current().type != TokenType::RIGHT_BRACE) {
+
+        if (current().type == TokenType::AT_KEYWORD) {
+            rule.nestedRules.push_back(parseRule());
+            continue;
+        }
+        
+        if (current().type == TokenType::WHITESPACE) {
+            advance();
+            continue;
+        }
+
+        size_t temp = pos;
+        bool isNested = false;
+
+        while (temp < tokens.size()) {
+            if (tokens[temp].type == TokenType::LEFT_BRACE) {
+                isNested = true;
+                break;
+            }
+            if (tokens[temp].type == TokenType::COLON) {
+                break;
+            }
+            if (tokens[temp].type == TokenType::AT_KEYWORD) {
+                isNested = true;
+                break;
+            }
+            temp++;
+        }
+
+        if (isNested) {
+            rule.nestedRules.push_back(parseRule());
+        } else {
+            auto decls = parseDeclarations();
+            rule.declarations.insert(rule.declarations.end(), decls.begin(), decls.end());
+        }
+    }
+
+    if (current().type == TokenType::RIGHT_BRACE) {
+        advance();
+    }
+
+    return rule;
+}
+
+AtRule Parser::parseAtRule() {
+    AtRule rule;
+
+    rule.name = current().value;
+    advance();
+
+    while (!eof() && current().type != TokenType::LEFT_BRACE) {
+        rule.prelude += parseComponentValue() + " ";
+    }
+
+    if (current().type == TokenType::LEFT_BRACE) {
+        advance();
+    }
+
+    while (!eof() && current().type != TokenType::RIGHT_BRACE) {
+        if (current().type == TokenType::WHITESPACE) {
+            advance();
+            continue;
+        }
+        rule.rules.push_back(parseRule());
+    }
+
+    if (current().type == TokenType::RIGHT_BRACE) {
+        advance();
+    }
+
+    return rule;
+}
+
+std::vector<std::string> Parser::parseSelectorList() {
+    vector<string> selectors;
+    string currentSelector;
+
+    while (!eof()) {
+        if (current().type == TokenType::LEFT_BRACE) {
+            break;
+        }
+
+        if (current().type == TokenType::COMMA) {
+            selectors.push_back(currentSelector);
+            currentSelector.clear();
+            advance();
+            continue;
+        }
+
+        currentSelector += current().value;
+        advance();
+    }
+
+    if (!currentSelector.empty()) {
+        selectors.push_back(currentSelector);
+    }
+
+    return selectors;
+}
+
+std::vector<Declaration> Parser::parseDeclarations() {
+    vector<Declaration> decls;
+
+    while (!eof()) {
+
+        if (current().type == TokenType::AT_KEYWORD) break;
+        if (current().type == TokenType::RIGHT_BRACE) break;
+        if (current().type == TokenType::SEMICOLON) {
+            advance();
+            continue;
+        }
+
+        if (current().type != TokenType::IDENT) {
+            advance();
+            continue;
+        }
+
+        Declaration decl;
+        decl.name = current().value;
+        advance();
+
+        if (current().type == TokenType::COLON) {
+            advance();
+        }
+
+        while (!eof() && current().type != TokenType::SEMICOLON) {
+            decl.value += parseComponentValue() + " ";
+        }
+
+        decls.push_back(decl);
+
+        if (current().type == TokenType::SEMICOLON) {
+            advance();
+        }
+        
+        return decls;
+        
+    }
+
+    return decls;
+}
+
+string Parser::parseComponentValue() {
+    
+    string value;
+    
+    if (current().type == TokenType::FUNCTION) {
+        value += current().value + "(";
+        advance();
+
+        while (!eof() && current().type != TokenType::RIGHT_PAREN) {
+            value += parseComponentValue();
+        }
+
+        if (current().type == TokenType::RIGHT_PAREN) {
+            value += ")";
+            advance();
+        }
+
+        return value;
+    }
+
+    value = current().value;
+    advance();
+    return value;
+}
+
+Token Parser::current() { return tokens[pos]; }
+Token Parser::next() { return tokens[pos + 1]; }
+
+void Parser::advance() { pos++; }
+
+bool Parser::eof() {
+    return pos >= tokens.size() || tokens[pos].type == TokenType::END_OF_FILE;
+}
+
+bool Parser::match(TokenType type) {
+    if (current().type == type) {
+        advance();
+        return true;
+    }
+    return false;
+}
+
+void Parser::consumeWhiteSpaces() {
+    while (current().type == TokenType::WHITESPACE) {
+        advance();
+    }
+}

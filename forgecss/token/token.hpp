@@ -18,7 +18,7 @@ public:
     const TokenType type;
     const std::string value;
     
-    Token(const TokenType type, const std::string value) : type(type), value(value) {}
+    Token(const TokenType type, const std::string value = "") : type(type), value(value) {}
 
 };
 

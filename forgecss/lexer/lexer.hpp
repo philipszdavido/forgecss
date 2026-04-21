@@ -2,127 +2,41 @@
 //  lexer.hpp
 //  forgecss
 //
-//  Created by Chidume Nnamdi on 16/04/2026.
+//  Created by Chidume Nnamdi on 20/04/2026.
 //
 
 #ifndef lexer_hpp
 #define lexer_hpp
 
-#pragma once
-
 #include <stdio.h>
-#include <string>
 #include <vector>
-#include <cctype>
-#include <iostream>
-#include "../TokenType/TokenType.h"
 #include "../token/token.hpp"
 
-using namespace std;
-//
-//enum class LexerMode {
-//    SELECTOR,
-//    DECLARATION_NAME,
-//    DECLARATION_VALUE
-//};
-//
-//class Lexer {
-//public:
-//    Lexer(string input);
-//    void tokenize();
-//    vector<Token> tokens;
-//
-//private:
-//    string input;
-//    size_t index = 0;
-//    LexerMode mode = LexerMode::SELECTOR;
-//
-//    char current();
-//    char next();
-//    bool eof();
-//    void advance();
-//    void reverse();
-//    
-//    bool isAlpha(char c);
-//    bool isDigit(char c);
-//    bool isAlphaNumeric(char c);
-//
-//    void add(TokenType type, string value);
-//
-//    void consumeWhitespace();
-//    string consumeIdent();
-//    string consumeString();
-//    void consumeNumber();
-//    void consumeIdentLike();
-//    void consumeURL();
-//    void consumeAtRule();
-//    string consumeToSemiColon();
-//    string consumeVariable();
-//
-//    void tokenizeSelector();
-//    void tokenizeDeclarationName();
-//    void tokenizeDeclarationValue();
-//    
-//    void consumeFunctionCallArgs();
-//    void changeMode(LexerMode modeToSet);
-//    bool isNestedRule();
-//    bool isNextChar(char v);
-//    
-//};
-
-enum class LexerMode {
-    SELECTOR,
-    DECLARATION_NAME,
-    DECLARATION_VALUE
-};
-
-class Lexer {
+class Tokenizer {
 public:
-    Lexer(string input);
-    void tokenize();
-    vector<Token> tokens;
+    Tokenizer(const std::string& input);
+    vector<Token> tokenize();
 
 private:
     string input;
-    size_t index = 0;
+    size_t pos = 0;
 
-    vector<LexerMode> modeStack;
-
-    // mode helpers
-    LexerMode mode();
-    void pushMode(LexerMode m);
-    void popMode();
-
-    // core
-    void tokenizeSelector();
-    void tokenizeDeclarationName();
-    void tokenizeDeclarationValue();
-
-    // helpers
     char current();
-    char next();
+    char next(int offset = 1);
     void advance();
+
     bool eof();
 
-    bool isAlpha(char c);
+    bool isWhitespace(char c);
     bool isDigit(char c);
-    bool isAlphaNumeric(char c);
+    bool isAlpha(char c);
+    bool isNameStart(char c);
+    bool isNameChar(char c);
 
-    void add(TokenType type, string value);
-
-    // consumers
-    string consumeIdent();
-    string consumeString();
-    string consumeVariable();
-    void consumeNumber();
-    void consumeIdentLike();
-    void consumeFunctionCallArgs();
-    void consumeURL();
-    void consumeWhitespace();
-    void consumeAtRule();
-
-    // logic
-    bool isStartOfSelector();
+    void consumeWhitespace(vector<Token>& tokens);
+    void consumeIdentLike(vector<Token>& tokens);
+    void consumeNumber(vector<Token>& tokens);
+    void consumeString(vector<Token>& tokens, char quote);
 };
 
 #endif /* lexer_hpp */

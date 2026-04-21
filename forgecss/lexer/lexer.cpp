@@ -2,1120 +2,170 @@
 //  lexer.cpp
 //  forgecss
 //
-//  Created by Chidume Nnamdi on 16/04/2026.
+//  Created by Chidume Nnamdi on 20/04/2026.
 //
 
 #include "lexer.hpp"
-//
-//unordered_map<string, string> keywords = {
-//    { "solid", "solid" }
-//};
-//
-//Lexer::Lexer(string input) : input(input) {
-//    add(TokenType::SELECTOR_START, "");
-//}
-//
-//void Lexer::tokenize() {
-//    while (!eof()) {
-//
-//        if (isspace(current())) {
-//            advance();
-//            continue;
-//        }
-//
-//        if (current() == '@') {
-//            consumeAtRule();
-//            continue;
-//        }
-//        
-////        if (current() == '}') {
-////            add(TokenType::RBRACE, "}");
-////            advance();
-////            changeMode(LexerMode::SELECTOR);
-////            continue;
-////        }
-//
-//        if (current() == '}') {
-//            add(TokenType::RBRACE, "}");
-//            advance();
-//
-//            // Look ahead: is next a selector?
-//            int j = (int)index;
-//            while (j < input.size() && isspace(input[j])) j++;
-//
-//            if (j < input.size() && (isalpha(input[j]) || input[j] == '.' || input[j] == '#')) {
-//                changeMode(LexerMode::SELECTOR);
-//            } else {
-//                changeMode(LexerMode::DECLARATION_NAME);
-//            }
-//
-//            continue;
-//        }
-//        
-//        switch (mode) {
-//
-//            case LexerMode::SELECTOR:
-//                tokenizeSelector();
-//                break;
-//
-//            case LexerMode::DECLARATION_NAME:
-//                tokenizeDeclarationName();
-//                break;
-//
-//            case LexerMode::DECLARATION_VALUE:
-//                tokenizeDeclarationValue();
-//                break;
-//        }
-//    }
-//
-//    add(TokenType::END_OF_FILE, "");
-//        
-//}
-//
-//void Lexer::tokenizeSelector() {
-//    char c = current();
-//    
-//    if (c == '{') {
-//        
-//        // check if next is empty body
-//        if (isNextChar('}')) {
-//
-//            changeMode(LexerMode::DECLARATION_NAME);
-//
-//            add(TokenType::LBRACE, "{");
-//            advance();
-//            return;
-//        }
-//
-//        if (isNextChar('@')) {
-//            changeMode(LexerMode::DECLARATION_NAME);
-//            add(TokenType::LBRACE, "{");
-//            advance();
-//            return;
-//        }
-//        
-//        advance();
-//        
-//        if (isNestedRule()) {
-//            add(TokenType::SELECTOR_END, "");
-//            add(TokenType::LBRACE, "{");
-//            add(TokenType::SELECTOR_START, "");
-//            changeMode(LexerMode::SELECTOR);
-//            return;
-//        }
-//
-//        reverse();
-//
-//        changeMode(LexerMode::DECLARATION_NAME);
-//        add(TokenType::LBRACE, "{");
-//        
-//        add(TokenType::DECLARATION_NAME_START, "");
-//
-//        advance();
-//        return;
-//    }
-//    
-//    if (c == '.') {
-//        advance();
-//        add(TokenType::DOT, ".");
-//        return;
-//    }
-//    
-//    if (c == ',') {
-//        advance();
-//        add(TokenType::COMMA, ",");
-//        return;
-//    }
-//    
-//    if (c == '>') {
-//        advance();
-//        add(TokenType::GT, ">");
-//        return;
-//    }
-//    
-//    if (c == '<') {
-//        advance();
-//        add(TokenType::LT, "<");
-//        return;
-//    }
-//    
-//    if (c == '+') {
-//        advance();
-//        add(TokenType::PLUS, "+");
-//        return;
-//    }
-//    
-//    if (c == '|') {
-//        advance();
-//        add(TokenType::PIPE, "|");
-//        return;
-//    }
-//    
-//    if (c == '=') {
-//        advance();
-//        add(TokenType::EQUALS, "=");
-//        return;
-//    }
-//
-//    if (c == '~') {
-//        advance();
-//        add(TokenType::TILDE, "~");
-//        return;
-//    }
-//    
-//    if (isspace(current())) {
-//        advance();
-//        add(TokenType::WHITESPACE, " ");
-//        return;
-//    }
-//
-//    if (c == ' ') {
-//        advance();
-//        add(TokenType::WHITESPACE, " ");
-//        return;
-//    }
-//
-//    if (c == '#') {
-//        advance();
-//        add(TokenType::HASH, consumeIdent());
-//        return;
-//    }
-//    
-//    if (c == '[') {
-//        advance();
-//        add(TokenType::LEFT_SQUARE_BRACE, "[");
-//        return;
-//    }
-//
-//    if (c == ']') {
-//        advance();
-//        add(TokenType::RIGHT_SQUARE_BRACE, "]");
-//        return;
-//    }
-//
-//    if (c == ':') {
-//        if (next() == ':') {
-//            advance(); advance();
-//            add(TokenType::DOUBLE_COLON, "::");
-//            return;
-//        }
-//        advance();
-//        add(TokenType::COLON, ":");
-//        return;
-//    }
-//
-//    if (isAlpha(c)) {
-//        
-//        string ident = consumeIdent();
-//        c = current();
-//        
-//        if (c == '(') {
-//            
-//            add(TokenType::FUNCTION, ident);
-//            add(TokenType::LPAREN, "(");
-//            advance();
-//
-//            while (!eof() && current() != ')') {
-//                // tokenizeDeclarationValue();
-//                consumeFunctionCallArgs();
-//            }
-//
-//            if (current() == ')') {
-//                add(TokenType::RPAREN, ")");
-//                advance();
-//            }
-//
-//            return;
-//
-//        }
-//        add(TokenType::IDENT, ident);
-//        return;
-//    }
-//
-//    advance();
-//    
-//}
-//
-//void Lexer::tokenizeDeclarationName() {
-//
-//    if (current() == '}') {
-//        add(TokenType::RBRACE, "}");
-//        changeMode(LexerMode::SELECTOR);
-//        advance();
-//        return;
-//    }
-//
-//    if (current() == ':') {
-//        add(TokenType::DECLARATION_NAME_END, "");
-//
-//        add(TokenType::COLON, ":");
-//        changeMode(LexerMode::DECLARATION_VALUE);
-//        add(TokenType::DECLARATION_VALUE_START, "");
-//
-//        advance();
-//        return;
-//    }
-//    
-////    if (tokens[tokens.size() - 1].type != TokenType::DECLARATION_NAME_START) {
-////        add(TokenType::DECLARATION_NAME_START, "");
-////    }
-//
-//    if (mode == LexerMode::DECLARATION_NAME &&
-//        tokens.back().type != TokenType::DECLARATION_NAME_START) {
-//        add(TokenType::DECLARATION_NAME_START, "");
-//    }
-//    
-//    if (isAlpha(current()) || current() == '-') {
-//        add(TokenType::IDENT, consumeIdent());
-//        return;
-//    }
-//
-//    advance();
-//}
-//
-//void Lexer::tokenizeDeclarationValue() {
-//
-//    char c = current();
-//
-//    if (c == ';') {
-//        add(TokenType::DECLARATION_VALUE_END, "");
-//        add(TokenType::SEMICOLON, ";");
-//
-//        // check to see if next is nested rule
-//        if (isNestedRule()) {
-//            changeMode(LexerMode::SELECTOR);
-//            advance();
-//            return;
-//        }
-//        
-//        if (isNextChar('@')) {
-//            advance();
-//            return;
-//        }
-//
-//        changeMode(LexerMode::DECLARATION_NAME);
-//        advance();
-//        return;
-//    }
-//
-//    if (c == '}') {
-//        add(TokenType::RBRACE, "}");
-//        changeMode(LexerMode::SELECTOR);
-//        advance();
-//        return;
-//    }
-//
-//    if (c == '"' || c == '\'') {
-//        add(TokenType::STRING, consumeString());
-//        return;
-//    }
-//
-//    if (isDigit(c) || (c == '.' && isDigit(next()))) {
-//        consumeNumber();
-//        return;
-//    }
-//
-//    if (isAlpha(c)) {
-//        consumeIdentLike();
-//        return;
-//    }
-//
-//    if (c == '#') {
-//        advance();
-//        add(TokenType::HASH, consumeIdent());
-//        return;
-//    }
-//
-//    if (c == ',') {
-//        add(TokenType::COMMA, ",");
-//        advance();
-//        return;
-//    }
-//
-//    if (c == '(') {
-//        add(TokenType::LPAREN, "(");
-//        advance();
-//        return;
-//    }
-//
-//    if (c == ')') {
-//        add(TokenType::RPAREN, ")");
-//        advance();
-//        return;
-//    }
-//    
-//    if (c == '-') {
-//        if (next() == '-') {
-//            advance(); advance();
-//            string value = consumeVariable();
-//            add(TokenType::VARIABLE, value);
-//            
-//            return;
-//        }
-//    }
-//
-//    advance();
-//}
-//
-//void Lexer::changeMode(LexerMode modeToSet) {
-//    
-//    if (mode != LexerMode::SELECTOR && modeToSet == LexerMode::SELECTOR) {
-//        
-//        // check if we reached end of file
-//        if (index >= (input.size() - 1)) {
-//            return;
-//        }
-//        
-//        // check if the next thing is not @
-//        int i = (int)index + 1;
-//        while(isspace(input[i])) {
-//            if (input[i + 1] == '@') {
-//                return;
-//            } else if (!isspace(input[i + 1])) break;
-//            i++;
-//        }
-//        
-//        // if there is nothing till we hit }, skip
-//        
-//        if (tokens[tokens.size() - 1].value == "}") {
-//            return;
-//        }
-//        
-//        add(TokenType::SELECTOR_START, "");
-//        
-//    } else if (mode == LexerMode::SELECTOR && modeToSet != LexerMode::SELECTOR) {
-//        add(TokenType::SELECTOR_END, "");
-//    }
-//
-//    mode = modeToSet;
-//}
-//
-//void Lexer::consumeNumber() {
-//    string num = "";
-//
-//    if (current() == '.') {
-//        num += '.';
-//        advance();
-//    }
-//
-//    while (isDigit(current())) {
-//        num += current();
-//        advance();
-//    }
-//
-//    if (current() == '.') {
-//        num += '.';
-//        advance();
-//        while (isDigit(current())) {
-//            num += current();
-//            advance();
-//        }
-//    }
-//
-//    if (current() == '%') {
-//        advance();
-//        add(TokenType::PERCENTAGE, num + "%");
-//        return;
-//    }
-//
-//    if (isAlpha(current())) {
-//        string unit = "";
-//        while (isAlpha(current())) {
-//            unit += current();
-//            advance();
-//        }
-//        add(TokenType::DIMENSION, num + unit);
-//        return;
-//    }
-//
-//    add(TokenType::NUMBER, num);
-//}
-//
-//void Lexer::consumeIdentLike() {
-//
-//    string ident = consumeIdent();
-//
-//    if (current() == '(') {
-//
-//        if (ident == "url") {
-//            consumeURL();
-//            return;
-//        }
-//
-//        add(TokenType::FUNCTION, ident);
-//        add(TokenType::LPAREN, "(");
-//
-//        advance();
-//
-//        while (!eof() && current() != ')') {
-//            // tokenizeDeclarationValue();
-//            consumeFunctionCallArgs();
-//        }
-//
-//        if (current() == ')') {
-//            add(TokenType::RPAREN, ")");
-//            advance();
-//        }
-//
-//        return;
-//    } else if (current() == ' ' || current() == ',') {
-//        if (!keywords.contains(ident)) {
-//            ident += consumeToSemiColon();
-//        }
-//    }
-//
-//    add(TokenType::IDENT, ident);
-//}
-//
-//string Lexer::consumeToSemiColon() {
-//    
-//    string value = "";
-//
-//    while (!eof() && current() != ';') {
-//        value += current();
-//        advance();
-//    }
-//    
-//    return value;
-//
-//}
-//
-//string Lexer::consumeVariable() {
-//    
-//    string value = "";
-//
-//    while (!eof() && (isAlphaNumeric(current()) || current() == '-')) {
-//        value += current();
-//        advance();
-//    }
-//    
-//    return value;
-//
-//}
-//
-//void Lexer::consumeURL() {
-//
-//    advance();
-//
-//    string value = "";
-//
-//    while (!eof() && current() != ')') {
-//        value += current();
-//        advance();
-//    }
-//
-//    advance();
-//
-//    add(TokenType::URL, value);
-//}
-//
-//string Lexer::consumeString() {
-//    char quote = current();
-//    advance();
-//
-//    string value = "";
-//
-//    while (!eof() && current() != quote) {
-//        value += current();
-//        advance();
-//    }
-//
-//    advance();
-//
-//    return value;
-//}
-//
-//string Lexer::consumeIdent() {
-//    string ident = "";
-//
-//    while (!eof() && isAlphaNumeric(current())) {
-//        ident += current();
-//        advance();
-//    }
-//
-//    return ident;
-//}
-//
-//void Lexer::consumeAtRule() {
-//    
-//    advance();
-//        
-//    string name = consumeIdent();
-//    add(TokenType::AT_KEYWORD, name);
-//
-//    while (!eof() && current() != '{') {
-//        char c = current();
-//
-//        if (isspace(c)) {
-//            consumeWhitespace();
-//            continue;
-//        }
-//
-//        if (isAlpha(c)) {
-//            add(TokenType::IDENT, consumeIdent());
-//            continue;
-//        }
-//
-//        if (c == '(') {
-//            add(TokenType::LPAREN, "(");
-//            advance();
-//            continue;
-//        }
-//
-//        if (c == ')') {
-//            add(TokenType::RPAREN, ")");
-//            advance();
-//            continue;
-//        }
-//
-//        if (c == ':') {
-//            add(TokenType::COLON, ":");
-//            advance();
-//            continue;
-//        }
-//
-//        if (isDigit(c)) {
-//            consumeNumber();
-//            continue;
-//        }
-//
-//        advance();
-//    }
-//
-//    if (current() == '{') {
-//        add(TokenType::LBRACE, "{");
-//        advance();
-//    }
-//
-//    changeMode(LexerMode::SELECTOR);
-//}
-//
-//void Lexer::consumeWhitespace() {
-//    string ws = "";
-//    while (!eof() && isspace(current())) {
-//        ws += current();
-//        advance();
-//    }
-//    add(TokenType::WHITESPACE, ws);
-//}
-//
-//void Lexer::consumeFunctionCallArgs() {
-//    char c = current();
-//
-//    add(TokenType::VALUE_START, "");
-//
-//    if (c == '"' || c == '\'') {
-//        add(TokenType::STRING, consumeString());
-//
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//
-//    if (isDigit(c) || (c == '.' && isDigit(next()))) {
-//        consumeNumber();
-//        
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//
-//    if (isAlpha(c)) {
-//        consumeIdentLike();
-//        
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//
-//    if (c == '#') {
-//        advance();
-//        add(TokenType::HASH, consumeIdent());
-//        
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//
-//    if (c == ',') {
-//        add(TokenType::COMMA, ",");
-//        advance();
-//        
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//
-//    if (c == '(') {
-//        add(TokenType::LPAREN, "(");
-//        advance();
-//        
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//
-//    if (c == ')') {
-//        add(TokenType::RPAREN, ")");
-//        advance();
-//        
-//        add(TokenType::VALUE_END, "");
-//
-//        return;
-//    }
-//    
-//    if (c == '-') {
-//        if (next() == '-') {
-//            advance(); advance();
-//            string value = consumeVariable();
-//            add(TokenType::VARIABLE, value);
-//            
-//            add(TokenType::VALUE_END, "");
-//
-//            return;
-//        }
-//    }
-//
-//    advance();
-//}
-//
-//bool Lexer::isNextChar(char v) {
-//  int j = (int)index + 1;
-//
-//    while (j < input.size()) {
-//        const char c = input[j];
-//        if (c == v) return true;
-//        if (!isspace(input[j])) return false;
-//        j++;
-//    }
-//
-//  return false;
-//    
-//}
-//
-///**
-// * checks if next char is '{', ':', or '}'
-// */
-//bool Lexer::isNestedRule() {
-//  // Look ahead until we find '{' or ':'
-//  int j = (int)index;
-//
-//    while (j < input.size()) {
-//        const char c = input[j];
-//        if (c == '{') return true;  // nested rule
-//        if (c == ';') return false;  // declaration
-//        if (c == '}') return false;  // declaration
-//        j++;
-//    }
-//
-//  return false;
-//    
-//}
-//
-//char Lexer::current() {
-//    return eof() ? '\0' : input[index];
-//}
-//
-//char Lexer::next() {
-//    return (index + 1 < input.size()) ? input[index + 1] : '\0';
-//}
-//
-//bool Lexer::eof() {
-//    return index >= input.size();
-//}
-//
-//void Lexer::advance() {
-//    index++;
-//}
-//
-//void Lexer::reverse() {
-//    index--;
-//}
-//
-//bool Lexer::isAlpha(char c) {
-//    return isalpha(c);
-//}
-//
-//bool Lexer::isDigit(char c) {
-//    return isdigit(c);
-//}
-//
-//bool Lexer::isAlphaNumeric(char c) {
-//    return isalnum(c) || c == '-' || c == '_';
-//}
-//
-//void Lexer::add(TokenType type, string value) {
-//    tokens.emplace_back(type, value);
-//}
+#include <cctype>
 
-Lexer::Lexer(string input) : input(input) {
-    modeStack.push_back(LexerMode::SELECTOR);
-    add(TokenType::SELECTOR_START, "");
-}
+Tokenizer::Tokenizer(const std::string& input) : input(input) {}
 
-LexerMode Lexer::mode() {
-    return modeStack.back();
-}
+std::vector<Token> Tokenizer::tokenize() {
+    std::vector<Token> tokens;
 
-void Lexer::pushMode(LexerMode m) {
-    modeStack.push_back(m);
-}
-
-void Lexer::popMode() {
-    if (modeStack.size() > 1) {
-        modeStack.pop_back();
-    }
-}
-
-void Lexer::tokenize() {
     while (!eof()) {
+        char c = current();
 
-        if (isspace(current())) {
-            consumeWhitespace();
+        if (isWhitespace(c)) {
+            consumeWhitespace(tokens);
             continue;
         }
 
-        if (current() == '@') {
-            consumeAtRule();
+        if (c == '"') {
+            consumeString(tokens, '"');
             continue;
         }
 
-        if (current() == '}') {
-            add(TokenType::RBRACE, "}");
+        if (c == '\'') {
+            consumeString(tokens, '\'');
+            continue;
+        }
+
+        if (c == '#') {
             advance();
-
-            popMode();
-
-            if (mode() == LexerMode::SELECTOR) {
-                add(TokenType::SELECTOR_START, "");
+            if (isNameChar(current())) {
+                std::string value;
+                while (isNameChar(current())) {
+                    value += current();
+                    advance();
+                }
+                tokens.emplace_back(TokenType::HASH, value);
+            } else {
+                tokens.emplace_back(TokenType::DELIM, "#");
             }
-
             continue;
         }
 
-        switch (mode()) {
-            case LexerMode::SELECTOR:
-                tokenizeSelector();
-                break;
-            case LexerMode::DECLARATION_NAME:
-                tokenizeDeclarationName();
-                break;
-            case LexerMode::DECLARATION_VALUE:
-                tokenizeDeclarationValue();
-                break;
-        }
-    }
-
-    add(TokenType::END_OF_FILE, "");
-}
-
-void Lexer::tokenizeSelector() {
-    char c = current();
-
-    if (c == '{') {
-        add(TokenType::SELECTOR_END, "");
-        add(TokenType::LBRACE, "{");
-        advance();
-
-        pushMode(LexerMode::DECLARATION_NAME);
-        add(TokenType::DECLARATION_NAME_START, "");
-        return;
-    }
-
-    if (c == '.') { advance(); add(TokenType::DOT, "."); return; }
-    if (c == '#') { advance(); add(TokenType::HASH, consumeIdent()); return; }
-    if (c == ',') { advance(); add(TokenType::COMMA, ","); return; }
-
-    if (c == ':') {
-        if (next() == ':') {
-            advance(); advance();
-            add(TokenType::COLON, "::");
-        } else {
+        if (c == '@') {
             advance();
-            add(TokenType::COLON, ":");
-        }
-        return;
-    }
-
-    if (isAlpha(c)) {
-        string ident = consumeIdent();
-
-        if (current() == '(') {
-            add(TokenType::FUNCTION, ident);
-            add(TokenType::LPAREN, "(");
-            advance();
-
-            while (!eof() && current() != ')') {
-                consumeFunctionCallArgs();
-            }
-
-            if (current() == ')') {
-                add(TokenType::RPAREN, ")");
+            std::string name;
+            while (isNameChar(current())) {
+                name += current();
                 advance();
             }
-            return;
+            tokens.emplace_back(TokenType::AT_KEYWORD, name);
+            continue;
         }
 
-        add(TokenType::IDENT, ident);
-        return;
-    }
-
-    advance();
-}
-
-void Lexer::tokenizeDeclarationName() {
-
-    if (current() == '}') return;
-
-    if (current() == ':') {
-        add(TokenType::DECLARATION_NAME_END, "");
-        add(TokenType::COLON, ":");
-        advance();
-
-        pushMode(LexerMode::DECLARATION_VALUE);
-        add(TokenType::DECLARATION_VALUE_START, "");
-        return;
-    }
-
-//    if (isStartOfSelector()) {
-//        popMode();
-//        pushMode(LexerMode::SELECTOR);
-//        add(TokenType::SELECTOR_START, "");
-//        return;
-//    }
-
-    if (isAlpha(current()) || current() == '-') {
-        add(TokenType::IDENT, consumeIdent());
-        return;
-    }
-
-    advance();
-}
-
-void Lexer::tokenizeDeclarationValue() {
-    char c = current();
-
-    if (c == ';') {
-        add(TokenType::DECLARATION_VALUE_END, "");
-        add(TokenType::SEMICOLON, ";");
-        advance();
-
-        popMode();
-        add(TokenType::DECLARATION_NAME_START, "");
-        return;
-    }
-
-    if (c == '}') return;
-
-    if (c == '"' || c == '\'') {
-        add(TokenType::STRING, consumeString());
-        return;
-    }
-
-    if (isDigit(c) || (c == '.' && isDigit(next()))) {
-        consumeNumber();
-        return;
-    }
-
-    if (isAlpha(c)) {
-        consumeIdentLike();
-        return;
-    }
-
-    if (c == '#') {
-        advance();
-        add(TokenType::HASH, consumeIdent());
-        return;
-    }
-
-    if (c == '(') { add(TokenType::LPAREN, "("); advance(); return; }
-    if (c == ')') { add(TokenType::RPAREN, ")"); advance(); return; }
-
-    if (c == '-' && next() == '-') {
-        advance(); advance();
-        add(TokenType::VARIABLE, consumeVariable());
-        return;
-    }
-
-    advance();
-}
-
-void Lexer::consumeAtRule() {
-    advance();
-    string name = consumeIdent();
-    add(TokenType::AT_KEYWORD, name);
-
-    while (!eof() && current() != '{') {
-        if (isspace(current())) { consumeWhitespace(); continue; }
-        if (isAlpha(current())) { add(TokenType::IDENT, consumeIdent()); continue; }
-        if (isDigit(current())) { consumeNumber(); continue; }
-        if (current() == '(') { add(TokenType::LPAREN, "("); advance(); continue; }
-        if (current() == ')') { add(TokenType::RPAREN, ")"); advance(); continue; }
-        advance();
-    }
-
-    if (current() == '{') {
-        add(TokenType::LBRACE, "{");
-        advance();
-
-        pushMode(LexerMode::SELECTOR);
-        add(TokenType::SELECTOR_START, "");
-    }
-}
-
-void Lexer::consumeFunctionCallArgs() {
-    char c = current();
-
-    add(TokenType::VALUE_START, "");
-
-    if (c == '"' || c == '\'') {
-        add(TokenType::STRING, consumeString());
-    } else if (isDigit(c) || (c == '.' && isDigit(next()))) {
-        consumeNumber();
-    } else if (isAlpha(c)) {
-        consumeIdentLike();
-    } else if (c == '#') {
-        advance();
-        add(TokenType::HASH, consumeIdent());
-    }
-
-    add(TokenType::VALUE_END, "");
-}
-
-void Lexer::consumeIdentLike() {
-    string ident = consumeIdent();
-
-    if (current() == '(') {
-        if (ident == "url") {
-            consumeURL();
-            return;
+        if (isDigit(c) || (c == '.' && isDigit(next()))) {
+            consumeNumber(tokens);
+            continue;
         }
 
-        add(TokenType::FUNCTION, ident);
-        add(TokenType::LPAREN, "(");
-        advance();
-
-        while (!eof() && current() != ')') {
-            consumeFunctionCallArgs();
+        if (isNameStart(c)) {
+            consumeIdentLike(tokens);
+            continue;
         }
 
-        if (current() == ')') {
-            add(TokenType::RPAREN, ")");
-            advance();
+        switch (c) {
+            case '{': tokens.emplace_back(TokenType::LEFT_BRACE); break;
+            case '}': tokens.emplace_back(TokenType::RIGHT_BRACE); break;
+            case '(': tokens.emplace_back(TokenType::LEFT_PAREN); break;
+            case ')': tokens.emplace_back(TokenType::RIGHT_PAREN); break;
+            case '[': tokens.emplace_back(TokenType::LEFT_BRACKET); break;
+            case ']': tokens.emplace_back(TokenType::RIGHT_BRACKET); break;
+            case ':': tokens.emplace_back(TokenType::COLON); break;
+            case ';': tokens.emplace_back(TokenType::SEMICOLON); break;
+            case ',': tokens.emplace_back(TokenType::COMMA); break;
+            default:
+                tokens.emplace_back(TokenType::DELIM, std::string(1, c));
         }
-        return;
-    }
 
-    add(TokenType::IDENT, ident);
-}
-
-void Lexer::consumeNumber() {
-    string num;
-
-    while (isDigit(current()) || current() == '.') {
-        num += current();
         advance();
     }
 
-    if (current() == '%') {
-        advance();
-        add(TokenType::PERCENTAGE, num + "%");
-        return;
-    }
-
-    if (isAlpha(current())) {
-        string unit;
-        while (isAlpha(current())) {
-            unit += current();
-            advance();
-        }
-        add(TokenType::DIMENSION, num + unit);
-        return;
-    }
-
-    add(TokenType::NUMBER, num);
+    tokens.emplace_back(TokenType::END_OF_FILE);
+    return tokens;
 }
 
-string Lexer::consumeIdent() {
-    string ident;
-    while (!eof() && isAlphaNumeric(current())) {
-        ident += current();
-        advance();
-    }
-    return ident;
+char Tokenizer::current() { return eof() ? '\0' : input[pos]; }
+char Tokenizer::next(int o) { return (pos + o < input.size()) ? input[pos + o] : '\0'; }
+void Tokenizer::advance() { pos++; }
+bool Tokenizer::eof() { return pos >= input.size(); }
+
+bool Tokenizer::isWhitespace(char c) { return isspace(c); }
+bool Tokenizer::isDigit(char c) { return isdigit(c); }
+bool Tokenizer::isAlpha(char c) { return isalpha(c); }
+
+bool Tokenizer::isNameStart(char c) {
+    return isAlpha(c) || c == '_' || c == '-';
 }
 
-string Lexer::consumeVariable() {
-    string value;
-    while (!eof() && (isAlphaNumeric(current()) || current() == '-')) {
-        value += current();
-        advance();
-    }
-    return value;
+bool Tokenizer::isNameChar(char c) {
+    return isNameStart(c) || isDigit(c);
 }
 
-string Lexer::consumeString() {
-    char quote = current();
+void Tokenizer::consumeWhitespace(std::vector<Token>& tokens) {
+    while (isWhitespace(current())) advance();
+    tokens.emplace_back(TokenType::WHITESPACE);
+}
+
+void Tokenizer::consumeString(std::vector<Token>& tokens, char quote) {
     advance();
+    std::string value;
 
-    string value;
     while (!eof() && current() != quote) {
         value += current();
         advance();
     }
 
-    advance();
-    return value;
+    if (current() == quote) {
+        advance();
+        tokens.emplace_back(TokenType::STRING, value);
+    } else {
+        tokens.emplace_back(TokenType::BAD_STRING);
+    }
 }
 
-void Lexer::consumeURL() {
-    advance(); // skip '('
+void Tokenizer::consumeIdentLike(std::vector<Token>& tokens) {
+    std::string name;
 
-    string value;
-    while (!eof() && current() != ')') {
-        value += current();
+    while (isNameChar(current())) {
+        name += current();
         advance();
     }
 
-    advance();
-    add(TokenType::URL, value);
+    if (current() == '(') {
+        advance();
+        tokens.emplace_back(TokenType::FUNCTION, name);
+    } else {
+        tokens.emplace_back(TokenType::IDENT, name);
+    }
 }
 
-void Lexer::consumeWhitespace() {
-    string ws;
-    while (!eof() && isspace(current())) {
-        ws += current();
+void Tokenizer::consumeNumber(std::vector<Token>& tokens) {
+    std::string number;
+
+    while (isDigit(current()) || current() == '.') {
+        number += current();
         advance();
     }
-    add(TokenType::WHITESPACE, ws);
-}
 
-bool Lexer::isStartOfSelector() {
-    int j = index;
-
-    while (j < input.size()) {
-        char c = input[j];
-
-        if (c == '{') return true;
-        if (c == ':') return false;
-        if (c == ';') return false;
-        if (c == '}') return false;
-
-        j++;
+    if (current() == '%') {
+        advance();
+        tokens.emplace_back(TokenType::PERCENTAGE, number);
+        return;
     }
 
-    return false;
-}
+    if (isNameStart(current())) {
+        std::string unit;
+        while (isNameChar(current())) {
+            unit += current();
+            advance();
+        }
+        tokens.emplace_back(TokenType::DIMENSION, number + unit);
+        return;
+    }
 
-char Lexer::current() { return eof() ? '\0' : input[index]; }
-char Lexer::next() { return (index + 1 < input.size()) ? input[index + 1] : '\0'; }
-void Lexer::advance() { index++; }
-bool Lexer::eof() { return index >= input.size(); }
-
-bool Lexer::isAlpha(char c) { return isalpha(c); }
-bool Lexer::isDigit(char c) { return isdigit(c); }
-bool Lexer::isAlphaNumeric(char c) { return isalnum(c) || c == '-' || c == '_'; }
-
-void Lexer::add(TokenType type, string value) {
-    tokens.emplace_back(type, value);
+    tokens.emplace_back(TokenType::NUMBER, number);
 }

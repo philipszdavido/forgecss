@@ -23,9 +23,6 @@ enum class TokenType {
     LEFT_BRACKET, RIGHT_BRACKET,
     BAD_STRING,
     
-    LBRACE, RBRACE,
-    LPAREN, RPAREN,
-    LBRACKET, RBRACKET,
     COLON, SEMICOLON,
     COMMA,
 
