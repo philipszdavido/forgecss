@@ -14,7 +14,7 @@
 
 using namespace std;
 
-class AttributeSelector : Selector {
+class AttributeSelector : public Selector {
 
     SelectorType type = SelectorType::AttributeSelector;
 

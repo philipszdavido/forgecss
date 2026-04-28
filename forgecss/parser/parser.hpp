@@ -41,6 +41,8 @@ private:
     string parseComponentValue();
     void consumeWhiteSpaces();
     void consumeTokenType(TokenType type, string errorMsg);
+    
+    vector<Selector> parseSelector(vector<Token> tokens);
 };
 
 #endif /* CSSParser_hpp */

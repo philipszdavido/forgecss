@@ -219,92 +219,212 @@ string Parser::parseComponentValue() {
     return value;
 }
 
-//void Parser::parseSelector(tokens) {
-//    
-//  const parts = [];
-//
-//  while (tokens.length) {
-//    let t = tokens.shift();
-//
-//    if (t.type === "DOT") {
-//      let name = tokens.shift().value;
-//      parts.push({ type: "ClassSelector", name });
-//    }
-//
-//    else if (t.type === "LBRACKET") {
-//      let name = tokens.shift().value;
-//      tokens.shift(); // RBRACKET
-//      parts.push({ type: "AttributeSelector", name });
-//    }
-//
-//    else if (t.type === "DOUBLE_COLON") {
-//      let name = tokens.shift().value;
-//      tokens.shift(); // LPAREN
-//      let arg = tokens.shift().value;
-//      tokens.shift(); // RPAREN
-//
-//      parts.push({
-//        type: "PseudoElement",
-//        name,
-//        argument: arg
-//      });
-//    }
-//
-//    else {
-//      break;
-//    }
-//  }
-//
-//  return parts;
-//}
-//
-//void Parser::parseValue(tokens) {
-//  const values = [];
-//
-//  while (tokens.length && tokens[0].type !== "SEMICOLON") {
-//    let t = tokens.shift();
-//
-//    if (t.type === "DIMENSION") {
-//      values.push({
-//        type: "Dimension",
-//        value: parseFloat(t.value),
-//        unit: t.unit
-//      });
-//    }
-//
-//    else if (t.type === "HASH") {
-//      values.push({
-//        type: "Color",
-//        value: t.value
-//      });
-//    }
-//
-//    else if (t.type === "FUNCTION") {
-//      let args = [];
-//
-//      tokens.shift(); // LPAREN
-//      while (tokens[0].type !== "RPAREN") {
-//        args.push(tokens.shift().value);
-//      }
-//      tokens.shift(); // RPAREN
-//
-//      values.push({
-//        type: "Function",
-//        name: t.name,
-//        args
-//      });
-//    }
-//
-//    else if (t.type === "IDENT") {
-//      values.push({
-//        type: "Keyword",
-//        value: t.value
-//      });
-//    }
-//  }
-//
-//  return values;
-//}
+vector<Selector> Parser::parseSelector(const vector<Token>& tokens) {
+    
+    vector<Selector> parts;
+    
+    size_t j = 0;
+
+    auto advance = [&]() {
+        if (j < tokens.size()) j++;
+    };
+
+    auto current = [&]() -> const Token& {
+        return tokens[j];
+    };
+
+    auto hasNext = [&]() -> bool {
+        return j < tokens.size();
+    };
+
+    while (hasNext()) {
+        Token t = current();
+
+        // .class, this is a class
+        if (t.type == TokenType::DOT) {
+            advance();
+
+            if (!hasNext()) break;
+
+            string name = current().value;
+            parts.push_back(ClassSelector(name));
+            advance();
+        }
+
+        // [attr=value]: we know we have hit an attribute
+        else if (t.type == TokenType::LEFT_BRACKET) {
+            advance();
+
+            string name;
+            string value;
+            bool hasValue = false;
+
+            if (hasNext() && current().type == TokenType::IDENT) {
+                name = current().value;
+                advance();
+            }
+
+            if (hasNext() && current().type == TokenType::EQUALS) {
+                advance();
+                hasValue = true;
+
+                if (hasNext()) {
+                    value = current().value;
+                    advance();
+                }
+            }
+
+            while (hasNext() && current().type != TokenType::RIGHT_BRACKET) {
+                advance();
+            }
+
+            if (hasNext()) advance();
+
+            parts.push_back(AttributeSelector(name, value, hasValue));
+        }
+
+        // ::pseudo-element(arg): pseudo element selector
+        else if (t.type == TokenType::DOUBLE_COLON) {
+            advance();
+
+            if (!hasNext()) break;
+
+            string name = current().value;
+            advance();
+
+            string arg;
+            if (hasNext() && current().type == TokenType::LEFT_PAREN) {
+                advance();
+
+                if (hasNext()) {
+                    arg = current().value;
+                    advance();
+                }
+
+                if (hasNext() && current().type == TokenType::RIGHT_PAREN) {
+                    advance();
+                }
+            }
+
+            parts.push_back(PseudoElementSelector(name, arg));
+        }
+
+        // :pseudo-class(arg): we have a pseudo class selector
+        else if (t.type == TokenType::COLON) {
+            advance();
+
+            if (!hasNext()) break;
+
+            string name = current().value;
+            advance();
+
+            string arg;
+            if (hasNext() && current().type == TokenType::LEFT_PAREN) {
+                advance();
+
+                while (hasNext() && current().type != TokenType::RIGHT_PAREN) {
+                    arg += current().value;
+                    advance();
+                }
+
+                if (hasNext()) advance();
+            }
+
+            parts.push_back(PseudoClassSelector(name, arg));
+        }
+
+        else {
+            break;
+        }
+    }
+
+    return parts;
+}
+
+vector<shared_ptr<Value>> Parser::parseValue(const vector<Token>& tokens, size_t& j) {
+    
+    vector<shared_ptr<Value>> values;
+
+    auto hasNext = [&]() {
+        return j < tokens.size();
+    };
+
+    auto current = [&]() -> const Token& {
+        return tokens[j];
+    };
+
+    auto advance = [&]() {
+        if (j < tokens.size()) j++;
+    };
+
+    while (hasNext() && current().type != TokenType::SEMICOLON) {
+
+        Token t = current();
+
+        // values like 10px, 2em, 50%
+        if (t.type == TokenType::DIMENSION) {
+            auto v = make_shared<DimensionValue>();
+            v->value = stod(t.value);
+            v->unit = t.unit;
+
+            values.push_back(v);
+            advance();
+        }
+
+        // values like #fff, #ff0000
+        else if (t.type == TokenType::HASH) {
+            auto v = make_shared<ColorValue>();
+            v->value = t.value;
+
+            values.push_back(v);
+            advance();
+        }
+
+        // values like rgb(), calc(), url()
+        else if (t.type == TokenType::FUNCTION) {
+            string name = t.value;
+            advance();
+
+            vector<shared_ptr<Value>> args;
+
+            if (hasNext() && current().type == TokenType::LEFT_PAREN) {
+                advance();
+
+                while (hasNext() && current().type != TokenType::RIGHT_PAREN) {
+                    auto inner = parseValue(tokens, j);
+                    args.insert(args.end(), inner.begin(), inner.end());
+                }
+
+                if (hasNext()) advance();
+            }
+
+            auto v = make_shared<FunctionValue>();
+            v->name = name;
+            v->args = args;
+
+            values.push_back(v);
+        }
+
+        // values like solid, red, auto
+        else if (t.type == TokenType::IDENT) {
+            auto v = make_shared<KeywordValue>();
+            v->value = t.value;
+
+            values.push_back(v);
+            advance();
+        }
+
+        else if (t.type == TokenType::COMMA) {
+            advance();
+        }
+
+        else {
+            advance();
+        }
+    }
+
+    return values;
+}
 
 Token Parser::current() { return tokens[pos]; }
 Token Parser::next() { return tokens[pos + 1]; }

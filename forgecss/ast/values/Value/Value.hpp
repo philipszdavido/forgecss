@@ -14,4 +14,26 @@ class Value {
     
 };
 
+struct Value {
+    virtual ~Value() = default;
+};
+
+struct DimensionValue : Value {
+    double value;
+    string unit;
+};
+
+struct ColorValue : Value {
+    string value;
+};
+
+struct KeywordValue : Value {
+    string value;
+};
+
+struct FunctionValue : Value {
+    string name;
+    vector<shared_ptr<Value>> args;
+};
+
 #endif /* Value_hpp */
