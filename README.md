@@ -1,10 +1,10 @@
 # forgecss
 
-forgecss is a small C++ CSS parser project that tokenizes CSS input, builds a stylesheet AST, and prints the parsed rules back to the console.
+forgecss is a C++ CSS parser project that tokenizes CSS input, builds a stylesheet AST, and returns the parsed rules.
 
 ## Overview
 
-This project demonstrates a lightweight CSS parser architecture with separate tokenizer, parser, AST, and logging components.
+This project demonstrates a CSS parser architecture with separate tokenizer, parser, AST, and logging components.
 
 It supports:
 
