@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <string>
 #include "../ast/ast.hpp"
 
 using namespace std;
@@ -19,6 +20,7 @@ void printIndent(int level);
 void printRule(const Rule& rule, int indent);
 void printAtRule(const AtRule& at, int indent);
 void printDeclaration(const Declaration& decl, int indent);
-void printStylesheet(const Stylesheet& sheet);
+void printStylesheet(const Stylesheet* sheet);
+string debugPrint(const ComplexSelector& sel);
 
 #endif /* log_hpp */

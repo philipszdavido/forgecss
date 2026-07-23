@@ -11,14 +11,23 @@
 #include <stdio.h>
 
 enum class SelectorType {
+    UniversalSelector,
+    TypeSelector,
+    IdSelector,
     ClassSelector,
     AttributeSelector,
-    PseudoSelector
+    PseudoSelector,
+    CompoundSelector,
 };
 
 class Selector {
 public:
     SelectorType type;
+
+    Selector(SelectorType t)
+        : type(t) {}
+
+    virtual ~Selector() = default;
 };
 
 #endif /* Selector_hpp */

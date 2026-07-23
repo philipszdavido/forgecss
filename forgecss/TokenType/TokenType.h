@@ -16,6 +16,7 @@
 
 using namespace std;
 
+namespace css {
 enum class TokenType {
     
     LEFT_BRACE, RIGHT_BRACE,
@@ -25,17 +26,18 @@ enum class TokenType {
     
     COLON, SEMICOLON,
     COMMA,
-
+    
     DOT, HASH, IDENT,
     DOUBLE_COLON,
     LEFT_SQUARE_BRACE,
     RIGHT_SQUARE_BRACE,
     GT, LT, PLUS, TILDE,
-    PIPE, EQUALS, AND, 
-
+    PIPE, EQUALS, AND, CARET, DOLLAR,
+    
     NUMBER,
     DIMENSION,
     PERCENTAGE,
+    COLOR,
     STRING,
     FUNCTION,
     URL,
@@ -43,7 +45,7 @@ enum class TokenType {
     FUNCTION_ARG,
     VALUE_END,
     VALUE_START,
-
+    
     AT_KEYWORD,
     
     DECLARATION_NAME_START,
@@ -53,12 +55,13 @@ enum class TokenType {
     SELECTOR_START,
     SELECTOR_END,
     MEDIA_START, MEDIA_END,
-
+    
     WHITESPACE,
     DELIM,
     END_OF_FILE
 };
+}
 
-void printTokenType(TokenType type);
+void printTokenType(css::TokenType type);
 
 #endif /* TokenType_h */

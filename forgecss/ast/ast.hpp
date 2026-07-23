@@ -12,23 +12,25 @@
 #include <string>
 #include <vector>
 #include "./selectors/includes.h"
+#include "ast/values/Value/Value.hpp"
 
 using namespace std;
 
-struct Color {};
-struct Dimension {};
-struct Variable {};
-
 struct Declaration {
     string name;
-    string value;
+    vector<shared_ptr<Value>> value;
+    bool important;
 };
 
 struct Rule;
 
+// Style Rule
+// ----------
+// div { <-- selector(s)
+//     border: 1px sold black; <-- declarations
+// }
 struct StyleRule {
-    vector<string> selectors;
-    vector<Selector> _selectors;
+    std::vector<ComplexSelector> selectors;
     vector<Declaration> declarations;
     vector<Rule> nestedRules;
 };

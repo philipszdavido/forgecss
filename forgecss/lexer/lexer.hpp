@@ -12,30 +12,37 @@
 #include <vector>
 #include "../token/token.hpp"
 
+using namespace css;
+
+namespace css {
 class Tokenizer {
 public:
     Tokenizer(const std::string& input);
-    vector<Token> tokenize();
-
+    vector<css::Token> tokenize();
+    
 private:
     string input;
     size_t pos = 0;
-
+    
     char current();
     char next(int offset = 1);
-    void advance();
+    void advance(int level = 1);
     bool eof();
-
+    
     bool isWhitespace(char c);
     bool isDigit(char c);
     bool isAlpha(char c);
     bool isNameStart(char c);
     bool isNameChar(char c);
-
-    void consumeWhitespace(vector<Token>& tokens);
-    void consumeIdentLike(vector<Token>& tokens);
-    void consumeNumber(vector<Token>& tokens);
-    void consumeString(vector<Token>& tokens, char quote);
+    
+    void consumeWhitespace(vector<css::Token>& tokens);
+    void consumeIdentLike(vector<css::Token>& tokens);
+    void consumeNumber(vector<css::Token>& tokens);
+    void consumeString(vector<css::Token>& tokens, char quote);
+    void consumeComment();
+    
+    bool isColor(string name);
 };
+}
 
 #endif /* lexer_hpp */

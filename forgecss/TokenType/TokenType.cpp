@@ -7,6 +7,8 @@
 
 #include "./TokenType.h"
 
+using namespace css;
+
 void printTokenType(TokenType type) {
     switch (type) {
             

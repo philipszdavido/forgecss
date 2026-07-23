@@ -9,10 +9,10 @@
 #define Value_hpp
 
 #include <stdio.h>
+#include <string>
+#include <vector>
 
-class Value {
-    
-};
+using namespace std;
 
 struct Value {
     virtual ~Value() = default;
@@ -35,5 +35,9 @@ struct FunctionValue : Value {
     string name;
     vector<shared_ptr<Value>> args;
 };
+
+struct NumberValue     : Value { double value; };
+struct PercentageValue : Value { double value; };
+struct StringValue     : Value { std::string value; };
 
 #endif /* Value_hpp */

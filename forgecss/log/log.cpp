@@ -7,8 +7,8 @@
 
 #include "log.hpp"
 
-void printStylesheet(const Stylesheet& sheet) {
-    for (const auto& rule : sheet.rules) {
+void printStylesheet(const Stylesheet* sheet) {
+    for (const auto& rule : sheet->rules) {
         printRule(rule, 0);
     }
 }
@@ -43,10 +43,7 @@ void printStyleRule(const StyleRule& rule, int indent) {
     printIndent(indent);
 
     for (size_t i = 0; i < rule.selectors.size(); i++) {
-        cout << rule.selectors[i];
-        if (i < rule.selectors.size() - 1) {
-            cout << ", ";
-        }
+        debugPrint(rule.selectors[i]);
     }
 
     cout << " {" << endl;
@@ -65,11 +62,34 @@ void printStyleRule(const StyleRule& rule, int indent) {
 
 void printDeclaration(const Declaration& decl, int indent) {
     printIndent(indent);
-    cout << decl.name << ": " << decl.value << ";" << endl;
+    cout << decl.name << ": ";
+
+    for (shared_ptr<Value> vl : decl.value) {
+    }
+    
+    cout << ";" << endl;
+    
 }
 
 void printIndent(int level) {
     for (int i = 0; i < level; i++) {
         cout << "  ";
     }
+}
+
+string debugPrint(const ComplexSelector& sel) {
+    string out;
+    for (size_t i = 0; i < sel.size(); ++i) {
+        if (i > 0) {
+            switch (sel[i].combinator) {
+                case Combinator::CHILD: out += " > "; break;
+                case Combinator::NEXT_SIBLING: out += " + "; break;
+                case Combinator::SUBSEQUENT_SIBLING: out += " ~ "; break;
+                default: out += " "; break;
+            }
+        }
+        for (auto& part : sel[i].compound.parts) {
+        }
+    }
+    return out;
 }

@@ -30,6 +30,18 @@ std::vector<Token> Tokenizer::tokenize() {
             consumeString(tokens, '\'');
             continue;
         }
+        
+        if (c == '/') {
+            if (next(1) == '*') {
+                
+                advance(2);
+                
+                // consume comment
+                consumeComment();
+                continue;
+                
+            }
+        }
 
         if (c == '#') {
             advance();
@@ -81,6 +93,8 @@ std::vector<Token> Tokenizer::tokenize() {
             case '>': tokens.emplace_back(TokenType::GT); break;
             case '<': tokens.emplace_back(TokenType::LT); break;
             case '.': tokens.emplace_back(TokenType::DOT); break;
+            case '^': tokens.emplace_back(TokenType::CARET); break;
+            case '$': tokens.emplace_back(TokenType::DOLLAR); break;
             default:
                 tokens.emplace_back(TokenType::DELIM, std::string(1, c));
         }
@@ -92,9 +106,16 @@ std::vector<Token> Tokenizer::tokenize() {
     return tokens;
 }
 
+void Tokenizer::consumeComment() {
+    while (!eof() && current() != '*' && next(1) != '/') {
+        advance();
+    }
+    advance(2);
+}
+
 char Tokenizer::current() { return eof() ? '\0' : input[pos]; }
 char Tokenizer::next(int o) { return (pos + o < input.size()) ? input[pos + o] : '\0'; }
-void Tokenizer::advance() { pos++; }
+void Tokenizer::advance(int level) { pos += level; }
 bool Tokenizer::eof() { return pos >= input.size(); }
 
 bool Tokenizer::isWhitespace(char c) { return isspace(c); }
@@ -142,8 +163,14 @@ void Tokenizer::consumeIdentLike(std::vector<Token>& tokens) {
     if (current() == '(') {
         advance();
         tokens.emplace_back(TokenType::FUNCTION, name);
+        tokens.emplace_back(TokenType::LEFT_PAREN, name);
     } else {
-        tokens.emplace_back(TokenType::IDENT, name);
+        
+        // check if its color
+        if (isColor(name)) {
+            tokens.emplace_back(TokenType::COLOR, name);
+        } else tokens.emplace_back(TokenType::IDENT, name);
+        
     }
 }
 
@@ -167,9 +194,20 @@ void Tokenizer::consumeNumber(std::vector<Token>& tokens) {
             unit += current();
             advance();
         }
-        tokens.emplace_back(TokenType::DIMENSION, number + unit);
+                
+        tokens.emplace_back(TokenType::DIMENSION, number, unit);
         return;
     }
 
     tokens.emplace_back(TokenType::NUMBER, number);
+}
+
+bool Tokenizer::isColor(string name) {
+    vector<string> colors = {"red", "blue"};
+    for (string color : colors) {
+        if (color == name) {
+            return true;
+        }
+    }
+    return false;
 }

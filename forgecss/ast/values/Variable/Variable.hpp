@@ -10,4 +10,6 @@
 
 #include <stdio.h>
 
+struct Variable {};
+
 #endif /* Variable_hpp */

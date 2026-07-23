@@ -12,14 +12,19 @@
 #include <string>
 #include "../TokenType/TokenType.h"
 
+namespace css {
 class Token {
     
 public:
     const TokenType type;
     const std::string value;
+    const std::string unit;
     
-    Token(const TokenType type, const std::string value = "") : type(type), value(value) {}
-
+    Token(const TokenType type, const std::string value = "", const std::string unit = "") : type(type), value(value), unit(unit) {
+    }
+    
 };
+
+}
 
 #endif /* token_hpp */

@@ -17,7 +17,8 @@ using namespace std;
 class ClassSelector : public Selector {
 public:
     SelectorType type = SelectorType::ClassSelector;
-    ClassSelector(const string name): name(name) {};
+    ClassSelector(const string name): name(name), Selector(SelectorType::ClassSelector) {
+    };
     
     const string name;
 };
